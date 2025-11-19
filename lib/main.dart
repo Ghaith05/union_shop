@@ -65,15 +65,18 @@ class HomeScreen extends StatelessWidget {
               Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.search, color: Colors.grey, size: 20),
+                    icon:
+                        const Icon(Icons.search, color: Colors.grey, size: 20),
                     onPressed: placeholderCallbackForButtons,
                   ),
                   IconButton(
-                    icon: const Icon(Icons.person_outline, color: Colors.grey, size: 20),
+                    icon: const Icon(Icons.person_outline,
+                        color: Colors.grey, size: 20),
                     onPressed: placeholderCallbackForButtons,
                   ),
                   IconButton(
-                    icon: const Icon(Icons.shopping_bag_outlined, color: Colors.grey, size: 20),
+                    icon: const Icon(Icons.shopping_bag_outlined,
+                        color: Colors.grey, size: 20),
                     onPressed: placeholderCallbackForButtons,
                   ),
                 ],
@@ -108,7 +111,10 @@ class HomeScreen extends StatelessWidget {
                       children: [
                         const Text(
                           'Union Shop',
-                          style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 8),
@@ -120,7 +126,8 @@ class HomeScreen extends StatelessWidget {
                         const SizedBox(height: 16),
                         ElevatedButton(
                           onPressed: () => navigateToProduct(context),
-                          style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF4d2963)),
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF4d2963)),
                           child: const Text('Browse Products'),
                         ),
                       ],
@@ -138,7 +145,9 @@ class HomeScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Categories', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                const Text('Categories',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 12),
                 SizedBox(
                   height: 120,
@@ -162,11 +171,15 @@ class HomeScreen extends StatelessWidget {
                               Container(
                                 height: 56,
                                 width: 56,
-                                decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(6)),
-                                child: const Icon(Icons.category, color: Colors.grey),
+                                decoration: BoxDecoration(
+                                    color: Colors.grey[200],
+                                    borderRadius: BorderRadius.circular(6)),
+                                child: const Icon(Icons.category,
+                                    color: Colors.grey),
                               ),
                               const SizedBox(height: 8),
-                              Text('Category ${i + 1}', style: const TextStyle(fontSize: 13)),
+                              Text('Category ${i + 1}',
+                                  style: const TextStyle(fontSize: 13)),
                             ],
                           ),
                         ),
@@ -186,7 +199,11 @@ class HomeScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
             child: Column(
               children: [
-                const Align(alignment: Alignment.centerLeft, child: Text('Featured', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600))),
+                const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text('Featured',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w600))),
                 const SizedBox(height: 12),
                 GridView.count(
                   shrinkWrap: true,
@@ -200,7 +217,9 @@ class HomeScreen extends StatelessWidget {
                       onTap: () => navigateToProduct(context),
                       child: Card(
                         elevation: 0,
-                        shape: RoundedRectangleBorder(side: BorderSide(color: Colors.grey[200]!), borderRadius: BorderRadius.circular(6)),
+                        shape: RoundedRectangleBorder(
+                            side: BorderSide(color: Colors.grey[200]!),
+                            borderRadius: BorderRadius.circular(6)),
                         child: Row(
                           children: [
                             AspectRatio(
@@ -208,7 +227,8 @@ class HomeScreen extends StatelessWidget {
                               child: Image.network(
                                 'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
                                 fit: BoxFit.cover,
-                                errorBuilder: (c, e, s) => Container(color: Colors.grey[200]),
+                                errorBuilder: (c, e, s) =>
+                                    Container(color: Colors.grey[200]),
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -217,9 +237,11 @@ class HomeScreen extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Product ${i + 1}', style: const TextStyle(fontSize: 14)),
+                                  Text('Product ${i + 1}',
+                                      style: const TextStyle(fontSize: 14)),
                                   const SizedBox(height: 6),
-                                  const Text('£12.00', style: TextStyle(color: Colors.grey)),
+                                  const Text('£12.00',
+                                      style: TextStyle(color: Colors.grey)),
                                 ],
                               ),
                             ),
@@ -242,18 +264,26 @@ class HomeScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
             child: Column(
               children: [
-                const Text('Union Shop', style: TextStyle(fontWeight: FontWeight.w700)),
+                const Text('Union Shop',
+                    style: TextStyle(fontWeight: FontWeight.w700)),
                 const SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    TextButton(onPressed: placeholderCallbackForButtons, child: const Text('Help')),
-                    TextButton(onPressed: placeholderCallbackForButtons, child: const Text('Terms')),
-                    TextButton(onPressed: placeholderCallbackForButtons, child: const Text('Contact')),
+                    TextButton(
+                        onPressed: placeholderCallbackForButtons,
+                        child: const Text('Help')),
+                    TextButton(
+                        onPressed: placeholderCallbackForButtons,
+                        child: const Text('Terms')),
+                    TextButton(
+                        onPressed: placeholderCallbackForButtons,
+                        child: const Text('Contact')),
                   ],
                 ),
                 const SizedBox(height: 8),
-                const Text('© University Union — All rights reserved', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                const Text('© University Union — All rights reserved',
+                    style: TextStyle(color: Colors.grey, fontSize: 12)),
               ],
             ),
           ),
