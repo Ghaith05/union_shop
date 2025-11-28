@@ -1,61 +1,25 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:union_shop/main.dart';
 
 void main() {
-  group('Home Page Tests', () {
-    testWidgets('should display home page with basic elements', (tester) async {
-      await tester.pumpWidget(const UnionShopApp());
-      await tester.pump();
+  testWidgets('HomeScreen renders title, CTA and featured product and navigates to product page', (WidgetTester tester) async {
+    // Build the full app to include routes
+    await tester.pumpWidget(const UnionShopApp());
+    await tester.pumpAndSettle();
 
-      // Check that basic UI elements are present
-      expect(
-        find.text('PLACEHOLDER HEADER TEXT - STUDENTS TO UPDATE!'),
-        findsOneWidget,
-      );
-      expect(find.text('Placeholder Hero Title'), findsOneWidget);
-      expect(find.text('PLACEHOLDER PRODUCTS SECTION'), findsOneWidget);
-      expect(find.text('BROWSE PRODUCTS'), findsOneWidget);
-      expect(find.text('VIEW ALL PRODUCTS'), findsOneWidget);
-    });
+    // Check the main title is present
+    expect(find.text('Union Shop'), findsOneWidget);
 
-    testWidgets('should display product cards', (tester) async {
-      await tester.pumpWidget(const UnionShopApp());
-      await tester.pump();
+    // Check the hero CTA button
+    expect(find.widgetWithText(ElevatedButton, 'Browse Products'), findsOneWidget);
 
-      // Check that product cards are displayed
-      expect(find.text('Placeholder Product 1'), findsOneWidget);
-      expect(find.text('Placeholder Product 2'), findsOneWidget);
-      expect(find.text('Placeholder Product 3'), findsOneWidget);
-      expect(find.text('Placeholder Product 4'), findsOneWidget);
+    // Check at least one featured product is present
+    expect(find.text('Product 1'), findsWidgets);
 
-      // Check prices are displayed
-      expect(find.text('£10.00'), findsOneWidget);
-      expect(find.text('£15.00'), findsOneWidget);
-      expect(find.text('£20.00'), findsOneWidget);
-      expect(find.text('£25.00'), findsOneWidget);
-    });
-
-    testWidgets('should display header icons', (tester) async {
-      await tester.pumpWidget(const UnionShopApp());
-      await tester.pump();
-
-      // Check that header icons are present
-      expect(find.byIcon(Icons.search), findsOneWidget);
-      expect(find.byIcon(Icons.shopping_bag_outlined), findsOneWidget);
-      expect(find.byIcon(Icons.menu), findsOneWidget);
-    });
-
-    testWidgets('should display footer', (tester) async {
-      await tester.pumpWidget(const UnionShopApp());
-      await tester.pump();
-
-      // Check that footer is present
-      expect(find.text('Placeholder Footer'), findsOneWidget);
-      expect(
-        find.text('Students should customise this footer section'),
-        findsOneWidget,
-      );
-    });
+    // Tap the CTA and verify navigation to the ProductPage placeholder
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Browse Products'));
+    await tester.pumpAndSettle();
+    expect(find.text('Product detail / list placeholder'), findsOneWidget);
   });
 }
