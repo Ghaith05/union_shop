@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:union_shop/product_page.dart';
 import 'package:union_shop/widgets/product_card.dart';
+import 'package:union_shop/widgets/about_page.dart';
 
 void main() {
   runApp(const UnionShopApp());
@@ -18,11 +19,12 @@ class UnionShopApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF4d2963)),
       ),
       home: const HomeScreen(),
-      // By default, the app starts at the '/' route, which is the HomeScreen
-      initialRoute: '/',
-      // When navigating to '/product', build and return the ProductPage
-      // In your browser, try this link: http://localhost:49856/#/product
-      routes: {'/product': (context) => const ProductPage()},
+      // Routes for navigation. Keep `home` as the default start screen.
+      // When navigating to '/product' build ProductPage, and '/about' builds AboutPage.
+      routes: {
+        '/product': (context) => const ProductPage(),
+        '/about': (context) => const AboutPage(),
+      },
     );
   }
 }
@@ -232,9 +234,8 @@ class HomeScreen extends StatelessWidget {
                 ),
               ],
             ),
-          ),    
+          ),
           const SizedBox(height: 16),
-
           // Footer
           Container(
             width: double.infinity,
@@ -251,6 +252,10 @@ class HomeScreen extends StatelessWidget {
                     TextButton(
                         onPressed: placeholderCallbackForButtons,
                         child: const Text('Help')),
+                    TextButton(
+                      onPressed: () => Navigator.pushNamed(context, '/about'),
+                      child: const Text('About'),
+                    ),
                     TextButton(
                         onPressed: placeholderCallbackForButtons,
                         child: const Text('Terms')),
@@ -270,5 +275,3 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
-
-// ProductCard extracted to lib/widgets/product_card.dart
