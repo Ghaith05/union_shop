@@ -44,7 +44,7 @@ void main() {
     await tester.tap(aboutBtn);
     await tester.pumpAndSettle();
 
-    // The AboutPage contains the heading 'About the Union Shop'
-    expect(find.textContaining('About the Union Shop'), findsOneWidget);
+    // The AboutPage contains the heading 'Welcome to the Union Shop'
+    expect(find.textContaining('Welcome to the Union Shop'), findsOneWidget);
   });
 }
