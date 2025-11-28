@@ -17,28 +17,15 @@ class AboutPage extends StatelessWidget {
         children: const [
           SizedBox(height: 8),
           Text(
-            'About the Union Shop',
+            'Welcome to the Union Shop!',
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 12),
           Text(
-            'The Union Shop provides official university merchandise and campus essentials. ',
-            style: TextStyle(fontSize: 16),
+            'We’re dedicated to giving you the very best University branded products, with a range of clothing and merchandise available to shop all year round. We also offer an exclusive personalisation service.\n\nAll online purchases are available for delivery or in-store collection. We hope you enjoy our products as much as we enjoy offering them to you. If you have any questions or comments, please contact us at hello@upsu.net.\n\nHappy shopping!\nThe Union Shop & Reception Team',
+            style: TextStyle(fontSize: 16, height: 1.4),
+            textAlign: TextAlign.justify,
           ),
-          SizedBox(height: 16),
-          Text(
-            'Opening Hours',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-          ),
-          SizedBox(height: 8),
-          Text('Mon - Fri: 9:00 - 17:00\nSat: 10:00 - 16:00\nSun: Closed'),
-          SizedBox(height: 16),
-          Text(
-            'Contact',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-          ),
-          SizedBox(height: 8),
-          Text('Email: unionshop@example.edu\nPhone: +44 1234 567890'),
         ],
       ),
     );
