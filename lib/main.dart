@@ -103,6 +103,7 @@ class HomeScreen extends StatelessWidget {
                   fit: BoxFit.cover,
                   errorBuilder: (c, e, s) => Container(color: Colors.grey[300]),
                 ),
+                // ignore: deprecated_member_use
                 Container(color: Colors.black.withOpacity(0.45)),
                 Center(
                   child: Padding(
