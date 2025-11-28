@@ -215,48 +215,24 @@ class HomeScreen extends StatelessWidget {
                   mainAxisSpacing: 12,
                   childAspectRatio: 3 / 1.2,
                   children: List.generate(4, (i) {
-                    return GestureDetector(
-                      onTap: () => navigateToProduct(context),
-                      child: Card(
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                            side: BorderSide(color: Colors.grey[200]!),
-                            borderRadius: BorderRadius.circular(6)),
-                        child: Row(
-                          children: [
-                            AspectRatio(
-                              aspectRatio: 1,
-                              child: Image.network(
-                                'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
-                                fit: BoxFit.cover,
-                                errorBuilder: (c, e, s) =>
-                                    Container(color: Colors.grey[200]),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Product ${i + 1}',
-                                      style: const TextStyle(fontSize: 14)),
-                                  const SizedBox(height: 6),
-                                  const Text('£12.00',
-                                      style: TextStyle(color: Colors.grey)),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                    return Card(
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        side: BorderSide(color: Colors.grey[200]!),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: ProductCard(
+                        title: 'Product ${i + 1}',
+                        price: '£12.00',
+                        imageUrl:
+                            'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
                       ),
                     );
                   }),
                 ),
               ],
             ),
-          ),
-
+          ),    
           const SizedBox(height: 16),
 
           // Footer
