@@ -121,20 +121,22 @@ class CollectionDetailPage extends StatelessWidget {
                 itemCount: products.length,
                 itemBuilder: (context, i) {
                   final Product p = products[i];
-                      return ListTile(
-                        leading: p.images.isNotEmpty
-                            ? SizedBox(
-                                width: 60,
-                                height: 60,
-                                child: Builder(builder: (_) {
-                                  final img = p.images.first;
-                                  if (img.startsWith('http')) {
-                                    return Image.network(img, width: 60, height: 60, fit: BoxFit.cover);
-                                  }
-                                  return Image.asset(img, width: 60, height: 60, fit: BoxFit.cover);
-                                }),
-                              )
-                            : null,
+                  return ListTile(
+                    leading: p.images.isNotEmpty
+                        ? SizedBox(
+                            width: 60,
+                            height: 60,
+                            child: Builder(builder: (_) {
+                              final img = p.images.first;
+                              if (img.startsWith('http')) {
+                                return Image.network(img,
+                                    width: 60, height: 60, fit: BoxFit.cover);
+                              }
+                              return Image.asset(img,
+                                  width: 60, height: 60, fit: BoxFit.cover);
+                            }),
+                          )
+                        : null,
                     title: Text(p.title),
                     subtitle: Text('\$${p.price.toStringAsFixed(2)}'),
                     onTap: () {
@@ -153,9 +155,11 @@ class CollectionDetailPage extends StatelessWidget {
                                     Builder(builder: (_) {
                                       final img = p.images.first;
                                       if (img.startsWith('http')) {
-                                        return Image.network(img, height: 200, fit: BoxFit.cover);
+                                        return Image.network(img,
+                                            height: 200, fit: BoxFit.cover);
                                       }
-                                      return Image.asset(img, height: 200, fit: BoxFit.cover);
+                                      return Image.asset(img,
+                                          height: 200, fit: BoxFit.cover);
                                     }),
                                   const SizedBox(height: 12),
                                   Text(p.title,
