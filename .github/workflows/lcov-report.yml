@@ -1,0 +1,43 @@
+name: CI — Coverage and LCOV Reporter
+
+on:
+  push:
+    # Only run on active branches for this repo
+    branches: [ main, CW ]
+  pull_request:
+
+jobs:
+  coverage:
+    name: Run tests and post coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: stable
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run tests with coverage
+        run: flutter test --coverage
+
+      - name: Upload lcov artifact (optional)
+        uses: actions/upload-artifact@v4
+        with:
+          name: lcov
+          path: coverage/lcov.info
+
+      - name: Post LCOV coverage comment on PR
+        uses: romeovs/lcov-reporter-action@v0.2.16
+        with:
+          lcov-file: ./coverage/lcov.info
+          delete-old-comments: true
+          title: Coverage Report
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
