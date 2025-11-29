@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:union_shop/views/product_page.dart';
+// import 'package:union_shop/views/product_page.dart'; // not used directly here
 import 'package:union_shop/widgets/product_card.dart';
 import 'package:union_shop/views/about_page.dart';
 import 'package:union_shop/views/collections_page.dart';
-import 'package:union_shop/data/sample_data.dart';
+// removed unused imports
 
 void main() {
   runApp(const UnionShopApp());
@@ -23,23 +23,12 @@ class UnionShopApp extends StatelessWidget {
       home: const HomeScreen(),
       // Routes for navigation. Keep `home` as the default start screen.
       // When navigating to '/product' build ProductPage, and '/about' builds AboutPage.
+// before: routes: { ... }
       routes: {
-          '/product': (context) => const ProductPage(),
-          '/about': (context) => const AboutPage(),
-
-          // Collections & collection detail (named routes)
-          CollectionsPage.routeName: (context) => const CollectionsPage(),
-          CollectionDetailPage.routeName: (context) {
-            final args = ModalRoute.of(context)!.settings.arguments;
-            if (args is CollectionItem) {
-              return CollectionDetailPage(collection: args);
-            }
-            // Fallback to a simple page when arguments are missing or invalid
-            return const Scaffold(
-              body: Center(child: Text('Collection not found')),
-    );
-  },
-},
+        // Keep About and Collections as simple.
+        '/about': (context) => const AboutPage(),
+        CollectionsPage.routeName: (context) => const CollectionsPage(),
+      },
     );
   }
 }
@@ -52,7 +41,8 @@ class HomeScreen extends StatelessWidget {
   }
 
   void navigateToProduct(BuildContext context) {
-    Navigator.pushNamed(context, '/product');
+    // Open the collections page (browse) instead of a product that requires an argument
+    Navigator.pushNamed(context, CollectionsPage.routeName);
   }
 
   void placeholderCallbackForButtons() {}
@@ -83,20 +73,25 @@ class HomeScreen extends StatelessWidget {
               Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.category, color: Colors.grey, size: 20),
+                    icon: const Icon(Icons.category,
+                        color: Colors.grey, size: 20),
                     tooltip: 'Collections',
-                    onPressed: () => Navigator.pushNamed(context, CollectionsPage.routeName),
+                    onPressed: () =>
+                        Navigator.pushNamed(context, CollectionsPage.routeName),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.search, color: Colors.grey, size: 20),
+                    icon:
+                        const Icon(Icons.search, color: Colors.grey, size: 20),
                     onPressed: placeholderCallbackForButtons,
                   ),
                   IconButton(
-                    icon: const Icon(Icons.person_outline, color: Colors.grey, size: 20),
+                    icon: const Icon(Icons.person_outline,
+                        color: Colors.grey, size: 20),
                     onPressed: placeholderCallbackForButtons,
                   ),
                   IconButton(
-                    icon: const Icon(Icons.shopping_bag_outlined, color: Colors.grey, size: 20),
+                    icon: const Icon(Icons.shopping_bag_outlined,
+                        color: Colors.grey, size: 20),
                     onPressed: placeholderCallbackForButtons,
                   ),
                 ],
