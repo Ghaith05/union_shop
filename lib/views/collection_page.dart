@@ -8,21 +8,21 @@ class CollectionPage extends StatelessWidget {
   final CollectionItem collection;
 
   const CollectionPage({Key? key, required this.collection}) : super(key: key);
-Widget _buildImage(String src, {double? width, double? height}) {
-  return Image.asset(
-    src,
-    width: width,
-    height: height,
-    fit: BoxFit.cover,
-    errorBuilder: (context, error, stackTrace) => Container(
+  Widget _buildImage(String src, {double? width, double? height}) {
+    return Image.asset(
+      src,
       width: width,
       height: height,
-      color: Colors.grey.shade200,
-      alignment: Alignment.center,
-      child: const Icon(Icons.image_not_supported, size: 28, color: Colors.grey),
-    ),
-  );
-}
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) => Container(
+        width: width,
+        height: height,
+        color: Colors.grey.shade200,
+        alignment: Alignment.center,
+        child: const Icon(Icons.image_not_supported, size: 28, color: Colors.grey),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,10 +73,56 @@ Widget _buildImage(String src, {double? width, double? height}) {
                         child: ListTile(
                           key: Key('collection-${collection.id}-product-$i'),
                           leading: p.images.isNotEmpty
-                              ? SizedBox(width: 64, height: 64, child: _buildImage(p.images.first))
+                              ? SizedBox(
+                                  width: 64,
+                                  height: 64,
+                                  child: Stack(
+                                    fit: StackFit.expand,
+                                    children: [
+                                      _buildImage(p.images.first),
+                                      if (p.onSale)
+                                        Positioned(
+                                          left: 0,
+                                          top: 0,
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 6, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: Colors.redAccent,
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                            ),
+                                            child: const Text('SALE',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 10,
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                )
                               : null,
                           title: Text(p.title),
-                          subtitle: Text('£${p.price.toStringAsFixed(2)}'),
+                          subtitle: p.onSale && p.salePrice != null
+                              ? Row(
+                                  children: [
+                                    Text(
+                                      '£${p.price.toStringAsFixed(2)}',
+                                      style: const TextStyle(
+                                          decoration:
+                                              TextDecoration.lineThrough,
+                                          color: Colors.grey),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text('£${p.salePrice!.toStringAsFixed(2)}',
+                                        style: const TextStyle(
+                                            color: Colors.redAccent,
+                                            fontWeight: FontWeight.bold)),
+                                  ],
+                                )
+                              : Text('£${p.price.toStringAsFixed(2)}'),
                           onTap: () => Navigator.of(context).push(
                             MaterialPageRoute(builder: (ctx) => ProductPage(product: p)),
                           ),
