@@ -33,7 +33,7 @@ class ProductPage extends StatelessWidget {
             const SizedBox(height: 12),
             Text(product.title, style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 8),
-            Text('\$${product.price.toStringAsFixed(2)}',
+            Text('£${product.price.toStringAsFixed(2)}',
                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             Text(product.description),
@@ -41,50 +41,50 @@ class ProductPage extends StatelessWidget {
             const SizedBox(height: 16),
 
             // Row with Size, Color, Quantity selectors (non-functional)
-          Row(
-            children: [
-              Expanded(
-                child: DropdownButton<String>(
-                  isExpanded: true,
-                  value: null,
-                  hint: const Text('Size'),
-                  items: const [
-                    DropdownMenuItem(value: 'S', child: Text('S')),
-                    DropdownMenuItem(value: 'M', child: Text('M')),
-                    DropdownMenuItem(value: 'L', child: Text('L')),
-                  ],
-                  onChanged: (_) {}, // placeholder
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: DropdownButton<String>(
-                  isExpanded: true,
-                  value: null,
-                  hint: const Text('Color'),
-                  items: const [
-                    DropdownMenuItem(value: 'Red', child: Text('Red')),
-                    DropdownMenuItem(value: 'Blue', child: Text('Blue')),
-                    DropdownMenuItem(value: 'Black', child: Text('Black')),
-                  ],
-                  onChanged: (_) {}, // placeholder
-                ),
-              ),
-              const SizedBox(width: 8),
-              // Quantity selector (1..10)
-              Expanded(
-                child: DropdownButton<int>(
-                  isExpanded: true,
-                  value: null,
-                  hint: const Text('Qty'),
-                  items: List<DropdownMenuItem<int>>.generate(
-                    10,
-                    (index) => DropdownMenuItem(
-                      value: index + 1,
-                      child: Text('${index + 1}'),
-                    ),
+            Row(
+              children: [
+                Expanded(
+                  child: DropdownButton<String>(
+                    isExpanded: true,
+                    value: null,
+                    hint: const Text('Size'),
+                    items: const [
+                      DropdownMenuItem(value: 'S', child: Text('S')),
+                      DropdownMenuItem(value: 'M', child: Text('M')),
+                      DropdownMenuItem(value: 'L', child: Text('L')),
+                    ],
+                    onChanged: (_) {}, // placeholder
                   ),
-                  onChanged: (_) {}, // placeholder
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: DropdownButton<String>(
+                    isExpanded: true,
+                    value: null,
+                    hint: const Text('Color'),
+                    items: const [
+                      DropdownMenuItem(value: 'Red', child: Text('Red')),
+                      DropdownMenuItem(value: 'Blue', child: Text('Blue')),
+                      DropdownMenuItem(value: 'Black', child: Text('Black')),
+                    ],
+                    onChanged: (_) {}, // placeholder
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // Quantity selector (1..10)
+                Expanded(
+                  child: DropdownButton<int>(
+                    isExpanded: true,
+                    value: null,
+                    hint: const Text('Qty'),
+                    items: List<DropdownMenuItem<int>>.generate(
+                      10,
+                      (index) => DropdownMenuItem(
+                        value: index + 1,
+                        child: Text('${index + 1}'),
+                      ),
+                    ),
+                    onChanged: (_) {}, // placeholder
                   ),
                 ),
               ],
@@ -101,13 +101,24 @@ class ProductPage extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 12),
-            // Share button lower (non-functional)
-            Align(
-            alignment: Alignment.centerRight,
-            child: OutlinedButton(onPressed: () {}, child: const Text('Share')),
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {},
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: Text('Buy with shop', style: TextStyle(fontSize: 16)),
+                ),
+              ),
             ),
-          const SizedBox(height: 8),
+            const SizedBox(height: 24),
+            // Share button at the bottom of the page (non-functional)
+            Align(
+              alignment: Alignment.centerRight,
+              child: OutlinedButton(onPressed: () {}, child: const Text('Share')),
+            ),
+            const SizedBox(height: 8),
           ],
         ),
       ),
