@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:union_shop/views/collections_page.dart';
 
 class ProductCard extends StatelessWidget {
   final String title;
@@ -16,7 +17,8 @@ class ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/product');
+        // Navigate to collections (browse) for now; product detail requires a Product object
+        Navigator.pushNamed(context, CollectionsPage.routeName);
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
