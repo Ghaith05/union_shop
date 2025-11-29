@@ -33,8 +33,31 @@ class ProductPage extends StatelessWidget {
             const SizedBox(height: 12),
             Text(product.title, style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 8),
-                        Text('£${product.price.toStringAsFixed(2)}',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            // Show sale price when applicable
+            if (product.onSale && product.salePrice != null)
+              Row(
+                children: [
+                  Text(
+                    '£${product.price.toStringAsFixed(2)}',
+                    style: const TextStyle(
+                      decoration: TextDecoration.lineThrough,
+                      color: Colors.grey,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '£${product.salePrice!.toStringAsFixed(2)}',
+                    style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.redAccent),
+                  ),
+                ],
+              )
+            else
+              Text('£${product.price.toStringAsFixed(2)}',
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             Text(product.description),
             const SizedBox(height: 16),
