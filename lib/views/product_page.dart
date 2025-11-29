@@ -33,13 +33,11 @@ class ProductPage extends StatelessWidget {
             const SizedBox(height: 12),
             Text(product.title, style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 8),
-            Text('£${product.price.toStringAsFixed(2)}',
+                        Text('£${product.price.toStringAsFixed(2)}',
                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             Text(product.description),
-
             const SizedBox(height: 16),
-
             // Row with Size, Color, Quantity selectors (non-functional)
             Row(
               children: [
