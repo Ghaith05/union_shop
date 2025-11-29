@@ -2,21 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:union_shop/views/collections_page.dart';
 import 'package:union_shop/data/sample_data.dart';
+// replaced CollectionDetailPage usage with push-based navigation; no direct import needed
 
 void main() {
   testWidgets('Collections page renders and navigates to detail',
       (WidgetTester tester) async {
     await tester.pumpWidget(
-      MaterialApp(
-        routes: {
-          CollectionDetailPage.routeName: (ctx) {
-            final args =
-                ModalRoute.of(ctx)!.settings.arguments as CollectionItem;
-            return CollectionDetailPage(collection: args);
-          }
-        },
-        home: const CollectionsPage(),
-      ),
+      const MaterialApp(home: CollectionsPage()),
     );
 
     // Verify collection cards exist
