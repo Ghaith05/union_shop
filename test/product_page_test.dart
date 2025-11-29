@@ -14,7 +14,7 @@ void main() {
 
     // Title may appear in app bar and content; assert visible
     expect(find.text(prod.title), findsWidgets);
-    expect(find.text('\$${prod.price.toStringAsFixed(2)}'), findsOneWidget);
+    expect(find.text('£${prod.price.toStringAsFixed(2)}'), findsOneWidget);
 
     // Dropdowns for Size, Color and Qty should be present (check by hint text)
     expect(find.text('Size'), findsOneWidget);

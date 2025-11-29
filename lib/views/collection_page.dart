@@ -76,7 +76,7 @@ Widget _buildImage(String src, {double? width, double? height}) {
                               ? SizedBox(width: 64, height: 64, child: _buildImage(p.images.first))
                               : null,
                           title: Text(p.title),
-                          subtitle: Text('\$${p.price.toStringAsFixed(2)}'),
+                          subtitle: Text('£${p.price.toStringAsFixed(2)}'),
                           onTap: () => Navigator.of(context).push(
                             MaterialPageRoute(builder: (ctx) => ProductPage(product: p)),
                           ),

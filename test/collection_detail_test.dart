@@ -22,7 +22,7 @@ void main() {
         sampleProducts.where((p) => p.collectionId == collection.id).toList();
     for (final p in products) {
       expect(find.text(p.title), findsOneWidget);
-      expect(find.text('\$${p.price.toStringAsFixed(2)}'), findsOneWidget);
+      expect(find.text('£${p.price.toStringAsFixed(2)}'), findsOneWidget);
     }
   });
 }
