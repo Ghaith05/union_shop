@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:union_shop/widgets/product_card.dart';
 import 'package:union_shop/views/about_page.dart';
 import 'package:union_shop/views/collections_page.dart';
+import 'package:union_shop/data/sample_data.dart';
+import 'package:union_shop/views/collection_page.dart';
 import 'package:union_shop/widgets/footer.dart';
 
 void main() {
@@ -152,6 +154,87 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
           ),
+          // Sale banner (tappable) - opens the Sale collection
+          Builder(
+            builder: (context) {
+              final saleCollection = sampleCollections.firstWhere(
+                (c) => c.name.toLowerCase() == 'sale' || c.id == 'c3',
+                orElse: () => sampleCollections.first,
+              );
+              return Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: GestureDetector(
+                  key: const Key('sale-collection-card'),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (ctx) =>
+                            CollectionPage(collection: saleCollection),
+                      ),
+                    );
+                  },
+                  child: Card(
+                    clipBehavior: Clip.hardEdge,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                    child: SizedBox(
+                      height: 140,
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          Image.asset(
+                            saleCollection.image.isNotEmpty
+                                ? saleCollection.image.first
+                                : 'assets/images/collections/Sale.png',
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) =>
+                                Container(color: Colors.grey[300]),
+                          ),
+                          // ignore: deprecated_member_use
+                          Container(color: Colors.black.withOpacity(0.35)),
+                          Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  saleCollection.name,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                const Text('Up to 50% off — shop sale items',
+                                    style: TextStyle(color: Colors.white70)),
+                              ],
+                            ),
+                          ),
+                          Positioned(
+                            left: 8,
+                            top: 8,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: Colors.redAccent,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: const Text('SALE',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold)),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
 
           // Categories
           Container(
@@ -249,14 +332,14 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: 16),
           // Footer
           SiteFooter(
-          onAbout: () => Navigator.pushNamed(context, '/about'),
+            onAbout: () => Navigator.pushNamed(context, '/about'),
             onHelp: placeholderCallbackForButtons,
             onTerms: placeholderCallbackForButtons,
             onContact: placeholderCallbackForButtons,
           ),
-                const SizedBox(height: 8),
-                const Text('© University Union — All rights reserved',
-                    style: TextStyle(color: Colors.grey, fontSize: 12)),
+          const SizedBox(height: 8),
+          const Text('© University Union — All rights reserved',
+              style: TextStyle(color: Colors.grey, fontSize: 12)),
         ],
       ),
     );
