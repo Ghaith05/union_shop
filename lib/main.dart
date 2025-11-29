@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:union_shop/widgets/product_card.dart';
 import 'package:union_shop/views/about_page.dart';
 import 'package:union_shop/views/collections_page.dart';
+import 'package:union_shop/widgets/footer.dart';
 
 void main() {
   runApp(const UnionShopApp());
@@ -247,39 +248,15 @@ class HomeScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           // Footer
-          Container(
-            width: double.infinity,
-            color: Colors.grey[50],
-            padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-            child: Column(
-              children: [
-                const Text('Union Shop',
-                    style: TextStyle(fontWeight: FontWeight.w700)),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton(
-                        onPressed: placeholderCallbackForButtons,
-                        child: const Text('Help')),
-                    TextButton(
-                      onPressed: () => Navigator.pushNamed(context, '/about'),
-                      child: const Text('About'),
-                    ),
-                    TextButton(
-                        onPressed: placeholderCallbackForButtons,
-                        child: const Text('Terms')),
-                    TextButton(
-                        onPressed: placeholderCallbackForButtons,
-                        child: const Text('Contact')),
-                  ],
-                ),
+          SiteFooter(
+          onAbout: () => Navigator.pushNamed(context, '/about'),
+            onHelp: placeholderCallbackForButtons,
+            onTerms: placeholderCallbackForButtons,
+            onContact: placeholderCallbackForButtons,
+          ),
                 const SizedBox(height: 8),
                 const Text('© University Union — All rights reserved',
                     style: TextStyle(color: Colors.grey, fontSize: 12)),
-              ],
-            ),
-          ),
         ],
       ),
     );
