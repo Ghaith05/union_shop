@@ -4,8 +4,6 @@ import 'package:union_shop/views/collections_page.dart';
 import 'package:union_shop/data/sample_data.dart';
 import 'package:union_shop/widgets/footer.dart';
 
-
-
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -56,8 +54,8 @@ class HomeScreen extends StatelessWidget {
                 TextButton(
                   key: const ValueKey('nav-collections'),
                   onPressed: placeholderCallbackForButtons,
-                  child: const Text('Shop',
-                      style: TextStyle(color: Colors.black)),
+                  child:
+                      const Text('Shop', style: TextStyle(color: Colors.black)),
                 ),
                 const SizedBox(width: 8),
                 TextButton(
@@ -69,14 +67,17 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(width: 8),
                 TextButton(
                   key: const ValueKey('nav-about'),
-                  onPressed: () {Navigator.pushNamed(context, '/about');},
-                  child: const Text('About',
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/about');
+                  },
+                  child: const Text('About Us',
                       style: TextStyle(color: Colors.black)),
                 ),
                 const Spacer(),
                 TextButton(
                   key: const ValueKey('nav-auth'),
-                  onPressed: () { Navigator.pushNamed(context, '/auth');
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/auth');
                   },
                   child: const Text('Account',
                       style: TextStyle(color: Colors.black)),
@@ -111,7 +112,7 @@ class HomeScreen extends StatelessWidget {
                 title: const Text('Shop'),
                 onTap: () {
                   Navigator.pop(context);
-                  placeholderCallbackForButtons();    
+                  placeholderCallbackForButtons();
                 },
               ),
               ListTile(

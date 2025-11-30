@@ -22,7 +22,7 @@ class _CollectionPageState extends State<CollectionPage> {
   String _selectedFilter = 'All products';
   String _selectedSort = 'Featured';
   int _pageIndex = 0;
-  int _pageSize = 8;
+  int _pageSize = 4;
   // Note: product categories are now stored on the Product model (`category`).
   // Any previous view-level category mappings were removed in favor of
   // data-driven filtering.
@@ -30,31 +30,34 @@ class _CollectionPageState extends State<CollectionPage> {
   @override
   void initState() {
     super.initState();
-    // lazy load products for this collection
+    // Seed synchronously so tests that don't call pumpAndSettle see content.
+    _products = sampleProducts
+        .where((p) => p.collectionId == widget.collection.id)
+        .toList();
+    // Compute global categories from the entire sample dataset so the
+    // filter dropdown consistently offers the same choices across
+    // collections (so a user can select 'Accessories' even if the
+    // current collection has no accessories).
+    final categories = sampleProducts
+        .map((p) => p.category)
+        .where((c) => c != null && c.trim().isNotEmpty)
+        .map((c) => c!.trim())
+        .toSet()
+        .toList()
+      ..sort();
+    _filterOptions = ['All products', ...categories];
+    _selectedFilter = 'All products';
+    _selectedSort = 'Featured';
+    _loading = false;
+
+    // Also fetch asynchronously to mimic a real service and refresh state.
     fetchProductsForCollection(widget.collection.id).then((list) {
-      // Product model doesn't include categories in sample data.
       setState(() {
         _products = list;
-        // Compute global categories from the entire sample dataset so the
-        // filter dropdown consistently offers the same choices across
-        // collections (so a user can select 'Accessories' even if the
-        // current collection has no accessories).
-        final categories = sampleProducts
-            .map((p) => p.category)
-            .where((c) => c != null && c.trim().isNotEmpty)
-            .map((c) => c!.trim())
-            .toSet()
-            .toList()
-          ..sort();
-        _filterOptions = ['All products', ...categories];
-        _selectedFilter = 'All products';
-        _selectedSort = 'Featured';
-        _loading = false;
       });
     }).catchError((e) {
       setState(() {
         _error = e.toString();
-        _loading = false;
       });
     });
   }
@@ -116,8 +119,8 @@ class _CollectionPageState extends State<CollectionPage> {
     } // otherwise keep original (Featured)
 
     // 4) Pagination calculations (pageSize computed from options)
-    // pageSizeOptions is defined lower or above; keep it consistent
-    const pageSizeOptions = [1, 2, 4]; // (or [4,8,16] if you prefer)
+    // Page size options for collection detail: 1, 2, or 4 items per page
+    const pageSizeOptions = [1, 2, 4];
     final int pageSize =
         pageSizeOptions.contains(_pageSize) ? _pageSize : pageSizeOptions.first;
     final totalPages = (filtered.length / pageSize).ceil().clamp(1, 999);

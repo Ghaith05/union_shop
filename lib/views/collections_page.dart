@@ -31,15 +31,19 @@ class _CollectionsPageState extends State<CollectionsPage> {
     super.initState();
     // Load collections from the (tiny) service. Keep this minimal so tests
     // can pump and settle after a microtask if necessary.
+    // Seed synchronously from the in-repo sample data so tests that do not
+    // pumpAndSettle still see content immediately.
+    _allCollections = sampleCollections;
+    _loading = false;
+
+    // Also fetch asynchronously to simulate a real service (harmless).
     fetchCollections().then((list) {
       setState(() {
         _allCollections = list;
-        _loading = false;
       });
     }).catchError((e) {
       setState(() {
         _error = e.toString();
-        _loading = false;
       });
     });
   }
