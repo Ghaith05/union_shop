@@ -23,7 +23,6 @@ class _CollectionPageState extends State<CollectionPage> {
   String _selectedSort = 'Featured';
   int _pageIndex = 0;
   int _pageSize = 8;
-  bool _loadMoreMode = false;
   // Note: product categories are now stored on the Product model (`category`).
   // Any previous view-level category mappings were removed in favor of
   // data-driven filtering.
@@ -36,8 +35,11 @@ class _CollectionPageState extends State<CollectionPage> {
       // Product model doesn't include categories in sample data.
       setState(() {
         _products = list;
-        // Compute categories present in the loaded products
-        final categories = _products
+        // Compute global categories from the entire sample dataset so the
+        // filter dropdown consistently offers the same choices across
+        // collections (so a user can select 'Accessories' even if the
+        // current collection has no accessories).
+        final categories = sampleProducts
             .map((p) => p.category)
             .where((c) => c != null && c.trim().isNotEmpty)
             .map((c) => c!.trim())
@@ -92,14 +94,19 @@ class _CollectionPageState extends State<CollectionPage> {
     // that a product (e.g. Sticker Pack) can be shown under Accessories even
     // if its collection is classified differently.
     // Show only products that belong to this collection, then apply selected category filter
-        // --- pipeline: filter -> sort -> paginate/load-more ---
+    // --- pipeline: filter -> sort -> paginate/load-more ---
     // 1) Start from products that belong to this collection
-    final base = _products.where((p) => p.collectionId == widget.collection.id).toList();
+    final base =
+        _products.where((p) => p.collectionId == widget.collection.id).toList();
 
     // 2) Apply category filter (data-driven)
     final filtered = _selectedFilter == 'All products'
         ? base
-        : base.where((p) => (p.category ?? '').toLowerCase() == _selectedFilter.toLowerCase()).toList();
+        : base
+            .where((p) =>
+                (p.category ?? '').toLowerCase() ==
+                _selectedFilter.toLowerCase())
+            .toList();
 
     // 3) Apply sort
     if (_selectedSort == 'Price ↑') {
@@ -117,11 +124,8 @@ class _CollectionPageState extends State<CollectionPage> {
     final clampedPageIndex = _pageIndex.clamp(0, totalPages - 1);
     final start = clampedPageIndex * pageSize;
 
-    // 5) Build visibleProducts. If _loadMoreMode is true we take an increasing prefix
-    //    (load more appends) otherwise we show the current page slice.
-    final visibleProducts = _loadMoreMode
-        ? filtered.take((clampedPageIndex + 1) * pageSize).toList()
-        : filtered.skip(start).take(pageSize).toList();
+    // 5) Build visibleProducts (page-by-page pagination only)
+    final visibleProducts = filtered.skip(start).take(pageSize).toList();
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.collection.name)),

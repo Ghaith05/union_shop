@@ -34,6 +34,7 @@ final List<Product> sampleProducts = [
     price: 19.99,
     images: ['assets/images/products/union_t-shirt.png'],
     description: 'Comfortable shop tee.',
+    category: 'Clothing',
   ),
   Product.sample(
     id: 'p2',
@@ -42,6 +43,7 @@ final List<Product> sampleProducts = [
     price: 39.99,
     images: ['assets/images/products/union_hoodie.png'],
     description: 'Warm hoodie.',
+    category: 'Clothing',
   ),
   Product.sample(
     id: 'p3',
