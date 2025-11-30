@@ -24,4 +24,38 @@ void main() {
 
     expect(find.text(first.name), findsOneWidget);
   });
+
+  testWidgets('sort toggles ordering of displayed collections', (WidgetTester tester) async {
+    await tester.pumpWidget(const MaterialApp(home: CollectionsPage()));
+    await tester.pumpAndSettle();
+
+    // Ensure all collections are visible by selecting a sufficiently large page size
+    await tester.tap(find.byKey(const ValueKey('collections-page-size')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('8').last);
+    await tester.pumpAndSettle();
+
+    // Ascending sort expected by default
+    final asc = List<CollectionItem>.from(sampleCollections)
+      ..sort((a, b) => a.name.compareTo(b.name));
+
+    final firstName = asc.first.name;
+    final lastName = asc.last.name;
+
+    // The first name should appear above the last name in the layout
+    final firstPos = tester.getTopLeft(find.text(firstName));
+    final lastPos = tester.getTopLeft(find.text(lastName));
+    expect(firstPos.dy < lastPos.dy, isTrue);
+
+    // Change sort to descending
+    await tester.tap(find.byKey(const ValueKey('collections-sort')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Name ↓').last);
+    await tester.pumpAndSettle();
+
+    // Positions should be reversed
+    final firstPosAfter = tester.getTopLeft(find.text(firstName));
+    final lastPosAfter = tester.getTopLeft(find.text(lastName));
+    expect(firstPosAfter.dy > lastPosAfter.dy, isTrue);
+  });
 }
