@@ -27,7 +27,17 @@ class _CollectionPageState extends State<CollectionPage> {
   final Map<String, String> _collectionCategory = {
     'c1': 'Clothing',
     'c2': 'Clothing',
-    'c3': 'Accessories',
+    // c3 is the Sale collection; don't classify the whole collection as
+    // Accessories (that caused all sale items to show as accessories).
+    'c3': 'Sale',
+  };
+  // Optional per-product category overrides (so a product can be an accessory
+  // even if its collection is tagged differently).
+  final Map<String, String> _productCategory = {
+    'p3': 'Accessories', // Sticker Pack (New Arrivals)
+    'p4': 'Accessories', // A5 Notebook (Sale)
+    'p5':
+        'Clothing', // Union Joggers (Sale) - classify as clothing when filtering
   };
 
   @override
@@ -82,10 +92,13 @@ class _CollectionPageState extends State<CollectionPage> {
         body: Center(child: Text('Error loading products: $_error')),
       );
     }
-    // Apply filter using lightweight mapping from collectionId -> category
+    // Apply filter using lightweight mapping; allow product-level overrides so
+    // that a product (e.g. Sticker Pack) can be shown under Accessories even
+    // if its collection is classified differently.
     final filtered = _products.where((p) {
       if (_selectedFilter == 'All products') return true;
-      final cat = _collectionCategory[p.collectionId] ?? '';
+      final prodCat = _productCategory[p.id];
+      final cat = prodCat ?? _collectionCategory[p.collectionId] ?? '';
       return cat.toLowerCase() == _selectedFilter.toLowerCase();
     }).toList();
 
@@ -97,7 +110,7 @@ class _CollectionPageState extends State<CollectionPage> {
     } // Featured: original order
 
     // Pagination calculations
-    const List<int> pageSizeOptions = [1, 2, 4];
+    const pageSizeOptions = [1, 2, 4];
     final int pageSize =
         pageSizeOptions.contains(_pageSize) ? _pageSize : pageSizeOptions.first;
     final totalPages = (filtered.length / pageSize).ceil().clamp(1, 999);
