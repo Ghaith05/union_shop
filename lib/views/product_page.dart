@@ -33,15 +33,6 @@ class _ProductPageState extends State<ProductPage> {
   @override
   Widget build(BuildContext context) {
     final product = widget.product;
-    // Ensure we show at least 4 thumbnails by duplicating the first image when
-    // the product has fewer than 4 images (matches requested UI).
-    final images = <String>[];
-    if (product.images.isNotEmpty) {
-      images.addAll(product.images);
-      while (images.length < 4) {
-        images.add(images.first);
-      }
-    }
 
     return Scaffold(
       appBar: AppBar(title: Text(product.title)),
