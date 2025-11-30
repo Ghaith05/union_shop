@@ -2,12 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:union_shop/data/sample_data.dart';
 import 'package:union_shop/models/product.dart';
 import 'package:union_shop/views/product_page.dart';
+import 'package:union_shop/data/product_service.dart';
 
-class CollectionPage extends StatelessWidget {
+class CollectionPage extends StatefulWidget {
   static const routeName = '/collection';
   final CollectionItem collection;
 
   const CollectionPage({Key? key, required this.collection}) : super(key: key);
+
+  @override
+  State<CollectionPage> createState() => _CollectionPageState();
+}
+
+class _CollectionPageState extends State<CollectionPage> {
+  List<Product> _products = [];
+  bool _loading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    // lazy load products for this collection
+    fetchProductsForCollection(widget.collection.id).then((list) {
+      setState(() {
+        _products = list;
+        _loading = false;
+      });
+    }).catchError((e) {
+      setState(() {
+        _error = e.toString();
+        _loading = false;
+      });
+    });
+  }
+
   Widget _buildImage(String src, {double? width, double? height}) {
     return Image.asset(
       src,
@@ -26,10 +54,22 @@ class CollectionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final products = sampleProducts.where((p) => p.collectionId == collection.id).toList();
+    if (_loading) {
+      return Scaffold(
+        appBar: AppBar(title: Text(widget.collection.name)),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+    if (_error != null) {
+      return Scaffold(
+        appBar: AppBar(title: Text(widget.collection.name)),
+        body: Center(child: Text('Error loading products: $_error')),
+      );
+    }
+    final products = _products;
 
     return Scaffold(
-      appBar: AppBar(title: Text(collection.name)),
+      appBar: AppBar(title: Text(widget.collection.name)),
       body: Column(
         children: [
           // small non-functional filter row
@@ -71,7 +111,8 @@ class CollectionPage extends StatelessWidget {
                       final Product p = products[i];
                       return Card(
                         child: ListTile(
-                          key: Key('collection-${collection.id}-product-$i'),
+                          key: Key(
+                              'collection-${widget.collection.id}-product-$i'),
                           leading: p.images.isNotEmpty
                               ? SizedBox(
                                   width: 64,
@@ -124,7 +165,8 @@ class CollectionPage extends StatelessWidget {
                                 )
                               : Text('£${p.price.toStringAsFixed(2)}'),
                           onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(builder: (ctx) => ProductPage(product: p)),
+                            MaterialPageRoute(
+                                builder: (ctx) => ProductPage(product: p)),
                           ),
                         ),
                       );
