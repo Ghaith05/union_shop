@@ -18,14 +18,23 @@ class _CollectionPageState extends State<CollectionPage> {
   List<Product> _products = [];
   bool _loading = true;
   String? _error;
+  List<String> _filterOptions = ['All products'];
+  String _selectedFilter = 'All products';
+  String _selectedSort = 'Featured';
+  int _pageIndex = 0;
+  int _pageSize = 8;
 
   @override
   void initState() {
     super.initState();
     // lazy load products for this collection
     fetchProductsForCollection(widget.collection.id).then((list) {
+      // Product model doesn't include categories in sample data.
       setState(() {
         _products = list;
+        _filterOptions = ['All products', 'Clothing', 'Accessories'];
+        _selectedFilter = 'All products';
+        _selectedSort = 'Featured';
         _loading = false;
       });
     }).catchError((e) {
@@ -87,41 +96,50 @@ class _CollectionPageState extends State<CollectionPage> {
                     const Text('FILTER BY', style: TextStyle(letterSpacing: 1.2, fontSize: 12)),
                     const SizedBox(width: 8),
                     DropdownButton<String>(
-                    key: const ValueKey('collection-filter-dropdown'),
-                    value: 'All products',
-                    items: const [
-                      DropdownMenuItem(value: 'All products', child: Text('All products')),
-                      DropdownMenuItem(value: 'Clothes', child: Text('Clothes')),
-                      DropdownMenuItem(value: 'Merchandise', child: Text('Merchandise')),
-                    ],
-                    onChanged: (_) {}, // wire later
+                      key: const ValueKey('collection-filter-dropdown'),
+                      value: _selectedFilter,
+                      items: _filterOptions
+                          .map((o) => DropdownMenuItem(value: o, child: Text(o)))
+                          .toList(),
+                      onChanged: (v) {
+                        if (v == null) return;
+                        setState(() {
+                          _selectedFilter = v;
+                          _pageIndex = 0;
+                        });
+                      },
+                    ),
+                  ]),
+                  Row(mainAxisSize: MainAxisSize.min, children: [
+                    const Text('SORT BY', style: TextStyle(letterSpacing: 1.2, fontSize: 12)),
+                    const SizedBox(width: 8),
+                    DropdownButton<String>(
+                      key: const ValueKey('collection-sort-dropdown'),
+                      value: 'Featured',
+                      items: const [
+                        DropdownMenuItem(
+                            value: 'Featured', child: Text('Featured')),
+                        DropdownMenuItem(
+                            value: 'Price ↑', child: Text('Price ↑')),
+                        DropdownMenuItem(
+                            value: 'Price ↓', child: Text('Price ↓')),
+                      ],
+                      onChanged: (_) {}, // wire later
+                    ),
+                  ]),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(minWidth: isWide ? 120 : 0),
+                    child: Align(
+                      alignment:
+                          isWide ? Alignment.centerRight : Alignment.centerLeft,
+                      child: Text('${_products.length} products',
+                          key: const ValueKey('collection-count')),
+                    ),
                   ),
-                ]),
-                Row(mainAxisSize: MainAxisSize.min, children: [
-                  const Text('SORT BY', style: TextStyle(letterSpacing: 1.2, fontSize: 12)),
-                  const SizedBox(width: 8),
-                  DropdownButton<String>(
-                  key: const ValueKey('collection-sort-dropdown'),
-                  value: 'Featured',
-                  items: const [
-                    DropdownMenuItem(value: 'Featured', child: Text('Featured')),
-                    DropdownMenuItem(value: 'Price ↑', child: Text('Price ↑')),
-                    DropdownMenuItem(value: 'Price ↓', child: Text('Price ↓')),
-                  ],
-                  onChanged: (_) {}, // wire later
-                ),
-            ]),
-            ConstrainedBox(
-              constraints: BoxConstraints(minWidth: isWide ? 120 : 0),
-              child: Align(
-                alignment: isWide ? Alignment.centerRight : Alignment.centerLeft,
-                child: Text('${_products.length} products', key: const ValueKey('collection-count')),
-              ),
-            ),
-          ],
-        );
-      }),
-    ),
+                ],
+              );
+            }),
+          ),
           // product list
           Expanded(
             child: products.isEmpty
