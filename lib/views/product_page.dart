@@ -13,17 +13,33 @@ class _ProductPageState extends State<ProductPage> {
   String? _selectedSize;
   String? _selectedColor;
   int? _selectedQty;
+  int _selectedImageIndex = 0;
+  late final PageController _pageController;
 
   @override
   void initState() {
     super.initState();
     // leave selections empty so the UI shows hint text by default
     _selectedQty = null;
+    _pageController = PageController(initialPage: _selectedImageIndex);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final product = widget.product;
+    // Ensure we show at least 4 thumbnails by duplicating the first image when
+    // the product has fewer than 4 images (matches requested UI).
+    final images = <String>[];
+    if (product.images.isNotEmpty) {
+      images.addAll(product.images);
+      while (images.length < 4) images.add(images.first);
+    }
 
     return Scaffold(
       appBar: AppBar(title: Text(product.title)),
@@ -33,16 +49,65 @@ class _ProductPageState extends State<ProductPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // image carousel (page view) using local assets
-            if (product.images.isNotEmpty)
+            if (images.isNotEmpty)
               SizedBox(
-                height: 240,
-                child: PageView.builder(
-                  itemCount: product.images.length,
-                  itemBuilder: (context, i) => Image.asset(
-                    product.images[i],
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(color: Colors.grey[300]),
-                  ),
+                height: 260,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: PageView.builder(
+                        controller: _pageController,
+                        onPageChanged: (idx) =>
+                            setState(() => _selectedImageIndex = idx),
+                        itemCount: images.length,
+                        itemBuilder: (context, i) => Image.asset(
+                          images[i],
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          errorBuilder: (_, __, ___) =>
+                              Container(color: Colors.grey[300]),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      height: 56,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        itemCount: images.length,
+                        separatorBuilder: (_, __) => const SizedBox(width: 8),
+                        itemBuilder: (ctx, i) {
+                          final img = images[i];
+                          final selected = i == _selectedImageIndex;
+                          return GestureDetector(
+                            onTap: () {
+                              _pageController.animateToPage(i,
+                                  duration: const Duration(milliseconds: 200),
+                                  curve: Curves.easeInOut);
+                              setState(() => _selectedImageIndex = i);
+                            },
+                            child: Container(
+                              width: 56,
+                              height: 56,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: selected
+                                        ? Colors.black
+                                        : Colors.transparent,
+                                    width: 2),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Image.asset(img,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) =>
+                                      Container(color: Colors.grey[300])),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               )
             else
@@ -75,7 +140,8 @@ class _ProductPageState extends State<ProductPage> {
               )
             else
               Text('£${product.price.toStringAsFixed(2)}',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             Text(product.description),
             const SizedBox(height: 16),
