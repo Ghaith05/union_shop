@@ -18,12 +18,13 @@ void main() {
         find.widgetWithText(ElevatedButton, 'Browse Products'), findsOneWidget);
 
     // Check at least one featured product is present
-    expect(find.text('Product 1'), findsWidgets);
+    // The sample data contains 'Union T-Shirt' as a featured product
+    expect(find.text('Union T-Shirt'), findsWidgets);
 
-    // Tap the CTA and verify navigation to the ProductPage placeholder
+    // Tap the CTA and verify navigation to the Collections page
     await tester.tap(find.widgetWithText(ElevatedButton, 'Browse Products'));
     await tester.pumpAndSettle();
-    expect(find.text('Product detail / list placeholder'), findsOneWidget);
+    expect(find.text('Collections'), findsOneWidget);
   });
 
   testWidgets('tapping About in footer navigates to About page',
