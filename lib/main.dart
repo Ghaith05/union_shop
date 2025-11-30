@@ -5,6 +5,7 @@ import 'package:union_shop/views/collections_page.dart';
 import 'package:union_shop/data/sample_data.dart';
 import 'package:union_shop/views/collection_page.dart';
 import 'package:union_shop/widgets/footer.dart';
+import 'package:union_shop/views/authentication_page.dart';
 
 void main() {
   runApp(const UnionShopApp());
@@ -28,6 +29,7 @@ class UnionShopApp extends StatelessWidget {
       routes: {
         // Keep About and Collections as simple.
         '/about': (context) => const AboutPage(),
+        '/auth': (context) => const AuthenticationPage(),
         CollectionsPage.routeName: (context) => const CollectionsPage(),
       },
     );
@@ -88,7 +90,7 @@ class HomeScreen extends StatelessWidget {
                   IconButton(
                     icon: const Icon(Icons.person_outline,
                         color: Colors.grey, size: 20),
-                    onPressed: placeholderCallbackForButtons,
+                    onPressed: () => Navigator.pushNamed(context, '/auth'),
                   ),
                   IconButton(
                     icon: const Icon(Icons.shopping_bag_outlined,
