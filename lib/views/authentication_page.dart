@@ -91,3 +91,76 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 }
+
+class SignupForm extends StatefulWidget {
+  const SignupForm({Key? key}) : super(key: key);
+
+  @override
+  State<SignupForm> createState() => _SignupFormState();
+}
+
+class _SignupFormState extends State<SignupForm> {
+  final _formKey = GlobalKey<FormState>(debugLabel: 'signup_form');
+  final _nameCtl = TextEditingController();
+  final _emailCtl = TextEditingController();
+  final _passwordCtl = TextEditingController();
+
+  @override
+  void dispose() {
+    _nameCtl.dispose();
+    _emailCtl.dispose();
+    _passwordCtl.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    if (_formKey.currentState?.validate() ?? false) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Signup submitted')));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextFormField(
+                key: const Key('signup_name'),
+                controller: _nameCtl,
+                decoration: const InputDecoration(labelText: 'Full name'),
+                validator: (v) => (v == null || v.isEmpty) ? 'Enter name' : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                key: const Key('signup_email'),
+                controller: _emailCtl,
+                decoration: const InputDecoration(labelText: 'Email'),
+                keyboardType: TextInputType.emailAddress,
+                validator: (v) => (v == null || v.isEmpty) ? 'Enter email' : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                key: const Key('signup_password'),
+                controller: _passwordCtl,
+                decoration: const InputDecoration(labelText: 'Password'),
+                obscureText: true,
+                validator: (v) => (v == null || v.length < 6) ? 'Password too short' : null,
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                key: const Key('signup_button'),
+                onPressed: _submit,
+                child: const Text('Create account'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
