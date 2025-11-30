@@ -23,6 +23,12 @@ class _CollectionPageState extends State<CollectionPage> {
   String _selectedSort = 'Featured';
   int _pageIndex = 0;
   int _pageSize = 8;
+  // Map collectionId -> category used for filtering (lightweight mapping)
+  final Map<String, String> _collectionCategory = {
+    'c1': 'Clothing',
+    'c2': 'Clothing',
+    'c3': 'Accessories',
+  };
 
   @override
   void initState() {
@@ -56,7 +62,8 @@ class _CollectionPageState extends State<CollectionPage> {
         height: height,
         color: Colors.grey.shade200,
         alignment: Alignment.center,
-        child: const Icon(Icons.image_not_supported, size: 28, color: Colors.grey),
+        child:
+            const Icon(Icons.image_not_supported, size: 28, color: Colors.grey),
       ),
     );
   }
@@ -75,7 +82,28 @@ class _CollectionPageState extends State<CollectionPage> {
         body: Center(child: Text('Error loading products: $_error')),
       );
     }
-    final products = _products;
+    // Apply filter using lightweight mapping from collectionId -> category
+    final filtered = _products.where((p) {
+      if (_selectedFilter == 'All products') return true;
+      final cat = _collectionCategory[p.collectionId] ?? '';
+      return cat.toLowerCase() == _selectedFilter.toLowerCase();
+    }).toList();
+
+    // Apply sort
+    if (_selectedSort == 'Price ↑') {
+      filtered.sort((a, b) => a.price.compareTo(b.price));
+    } else if (_selectedSort == 'Price ↓') {
+      filtered.sort((a, b) => b.price.compareTo(a.price));
+    } // Featured: original order
+
+    // Pagination calculations
+    const List<int> pageSizeOptions = [1, 2, 4];
+    final int pageSize =
+        pageSizeOptions.contains(_pageSize) ? _pageSize : pageSizeOptions.first;
+    final totalPages = (filtered.length / pageSize).ceil().clamp(1, 999);
+    final clampedPageIndex = _pageIndex.clamp(0, totalPages - 1);
+    final start = clampedPageIndex * pageSize;
+    final visibleProducts = filtered.skip(start).take(pageSize).toList();
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.collection.name)),
@@ -93,13 +121,15 @@ class _CollectionPageState extends State<CollectionPage> {
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   Row(mainAxisSize: MainAxisSize.min, children: [
-                    const Text('FILTER BY', style: TextStyle(letterSpacing: 1.2, fontSize: 12)),
+                    const Text('FILTER BY',
+                        style: TextStyle(letterSpacing: 1.2, fontSize: 12)),
                     const SizedBox(width: 8),
                     DropdownButton<String>(
                       key: const ValueKey('collection-filter-dropdown'),
                       value: _selectedFilter,
                       items: _filterOptions
-                          .map((o) => DropdownMenuItem(value: o, child: Text(o)))
+                          .map(
+                              (o) => DropdownMenuItem(value: o, child: Text(o)))
                           .toList(),
                       onChanged: (v) {
                         if (v == null) return;
@@ -111,11 +141,12 @@ class _CollectionPageState extends State<CollectionPage> {
                     ),
                   ]),
                   Row(mainAxisSize: MainAxisSize.min, children: [
-                    const Text('SORT BY', style: TextStyle(letterSpacing: 1.2, fontSize: 12)),
+                    const Text('SORT BY',
+                        style: TextStyle(letterSpacing: 1.2, fontSize: 12)),
                     const SizedBox(width: 8),
                     DropdownButton<String>(
                       key: const ValueKey('collection-sort-dropdown'),
-                      value: 'Featured',
+                      value: _selectedSort,
                       items: const [
                         DropdownMenuItem(
                             value: 'Featured', child: Text('Featured')),
@@ -124,7 +155,14 @@ class _CollectionPageState extends State<CollectionPage> {
                         DropdownMenuItem(
                             value: 'Price ↓', child: Text('Price ↓')),
                       ],
-                      onChanged: (_) {}, // wire later
+                      onChanged: (v) {
+                        if (v == null) return;
+                        setState(() {
+                          _selectedSort = v;
+                          _pageIndex =
+                              0; // reset page to first when sort changes
+                        });
+                      },
                     ),
                   ]),
                   ConstrainedBox(
@@ -132,7 +170,7 @@ class _CollectionPageState extends State<CollectionPage> {
                     child: Align(
                       alignment:
                           isWide ? Alignment.centerRight : Alignment.centerLeft,
-                      child: Text('${_products.length} products',
+                      child: Text('${filtered.length} products',
                           key: const ValueKey('collection-count')),
                     ),
                   ),
@@ -142,13 +180,13 @@ class _CollectionPageState extends State<CollectionPage> {
           ),
           // product list
           Expanded(
-            child: products.isEmpty
+            child: visibleProducts.isEmpty
                 ? const Center(child: Text('No products in this collection.'))
                 : ListView.builder(
                     padding: const EdgeInsets.all(12),
-                    itemCount: products.length,
+                    itemCount: visibleProducts.length,
                     itemBuilder: (ctx, i) {
-                      final Product p = products[i];
+                      final Product p = visibleProducts[i];
                       return Card(
                         child: ListTile(
                           key: Key(
@@ -212,6 +250,61 @@ class _CollectionPageState extends State<CollectionPage> {
                       );
                     },
                   ),
+          ),
+          // --- pagination controls ---
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(children: [
+                  ElevatedButton(
+                    key: const ValueKey('collection-prev'),
+                    onPressed: clampedPageIndex > 0
+                        ? () {
+                            setState(() {
+                              _pageIndex = clampedPageIndex - 1;
+                            });
+                          }
+                        : null,
+                    child: const Text('Prev'),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    key: const ValueKey('collection-next'),
+                    onPressed: clampedPageIndex < totalPages - 1
+                        ? () {
+                            setState(() {
+                              _pageIndex = clampedPageIndex + 1;
+                            });
+                          }
+                        : null,
+                    child: const Text('Next'),
+                  ),
+                ]),
+                Row(children: [
+                  Text('Page ${clampedPageIndex + 1} of $totalPages'),
+                  const SizedBox(width: 12),
+                  const Text('Page size:'),
+                  const SizedBox(width: 8),
+                  DropdownButton<int>(
+                    key: const ValueKey('collection-page-size'),
+                    value: pageSize,
+                    items: pageSizeOptions
+                        .map((v) =>
+                            DropdownMenuItem(value: v, child: Text('$v')))
+                        .toList(),
+                    onChanged: (v) {
+                      if (v == null) return;
+                      setState(() {
+                        _pageSize = v;
+                        _pageIndex = 0; // reset when changing page size
+                      });
+                    },
+                  ),
+                ]),
+              ],
+            ),
           ),
         ],
       ),
