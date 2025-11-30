@@ -57,53 +57,119 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 1,
         titleSpacing: 0,
-        title: Row(
-          children: [
-            GestureDetector(
-              onTap: () => navigateToHome(context),
-              child: Image.network(
-                'https://shop.upsu.net/cdn/shop/files/upsu_300x300.png?v=1614735854',
-                height: 28,
-                errorBuilder: (c, e, s) => const SizedBox(
+        title: Builder(builder: (context) {
+          final width = MediaQuery.of(context).size.width;
+          final isDesktop = width >= 720; // adjust breakpoint as needed
+          return Row(
+            children: [
+              GestureDetector(
+                onTap: () => navigateToHome(context),
+                child: Image.network(
+                  'https://shop.upsu.net/cdn/shop/files/upsu_300x300.png?v=1614735854',
                   height: 28,
-                  child: Icon(Icons.image_not_supported, color: Colors.grey),
+                  errorBuilder: (c, e, s) => const SizedBox(
+                    height: 28,
+                    child: Icon(Icons.image_not_supported, color: Colors.grey),
+                  ),
                 ),
               ),
-            ),
-            const Spacer(),
-            if (width > 360)
-              Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.category,
-                        color: Colors.grey, size: 20),
-                    tooltip: 'Collections',
-                    onPressed: () =>
-                        Navigator.pushNamed(context, CollectionsPage.routeName),
-                  ),
-                  IconButton(
-                    icon:
-                        const Icon(Icons.search, color: Colors.grey, size: 20),
-                    onPressed: placeholderCallbackForButtons,
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.person_outline,
-                        color: Colors.grey, size: 20),
-                    onPressed: () => Navigator.pushNamed(context, '/auth'),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.shopping_bag_outlined,
-                        color: Colors.grey, size: 20),
-                    onPressed: placeholderCallbackForButtons,
-                  ),
-                ],
-              )
-            else
-              IconButton(
-                icon: const Icon(Icons.menu, color: Colors.grey, size: 20),
-                onPressed: placeholderCallbackForButtons,
+              const SizedBox(width: 12),
+              if (isDesktop) ...[
+                TextButton(
+                  key: const ValueKey('nav-home'),
+                  onPressed: placeholderCallbackForButtons,
+                  child:
+                      const Text('Home', style: TextStyle(color: Colors.black)),
+                ),
+                const SizedBox(width: 8),
+                TextButton(
+                  key: const ValueKey('nav-collections'),
+                  onPressed: placeholderCallbackForButtons,
+                  child: const Text('Collections',
+                      style: TextStyle(color: Colors.black)),
+                ),
+                const SizedBox(width: 8),
+                TextButton(
+                  key: const ValueKey('nav-sale'),
+                  onPressed: placeholderCallbackForButtons,
+                  child:
+                      const Text('Sale', style: TextStyle(color: Colors.black)),
+                ),
+                const SizedBox(width: 8),
+                TextButton(
+                  key: const ValueKey('nav-about'),
+                  onPressed: placeholderCallbackForButtons,
+                  child: const Text('About',
+                      style: TextStyle(color: Colors.black)),
+                ),
+                const Spacer(),
+                TextButton(
+                  key: const ValueKey('nav-auth'),
+                  onPressed: () { Navigator.pushNamed(context, '/auth');
+                  },
+                  child: const Text('Account',
+                      style: TextStyle(color: Colors.black)),
+                ),
+              ] else ...[
+                const Spacer(),
+                IconButton(
+                  key: const ValueKey('nav-menu'),
+                  icon: const Icon(Icons.menu, color: Colors.grey, size: 20),
+                  onPressed: placeholderCallbackForButtons,
+                ),
+              ]
+            ],
+          );
+        }),
+      ),
+      drawer: Drawer(
+        child: SafeArea(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              ListTile(
+                key: const ValueKey('drawer-home'),
+                title: const Text('Home'),
+                onTap: () {
+                  Navigator.pop(context);
+                  placeholderCallbackForButtons();
+                },
               ),
-          ],
+              ListTile(
+                key: const ValueKey('drawer-collections'),
+                title: const Text('Collections'),
+                onTap: () {
+                  Navigator.pop(context);
+                  placeholderCallbackForButtons();
+                },
+              ),
+              ListTile(
+                key: const ValueKey('drawer-sale'),
+                title: const Text('Sale'),
+                onTap: () {
+                  Navigator.pop(context);
+                  placeholderCallbackForButtons();
+                },
+              ),
+              ListTile(
+                key: const ValueKey('drawer-about'),
+                title: const Text('About'),
+                onTap: () {
+                  Navigator.pop(context);
+                  placeholderCallbackForButtons();
+                },
+              ),
+              const Divider(),
+              ListTile(
+                key: const ValueKey('drawer-auth'),
+                title: const Text('Account'),
+                onTap: () {
+                  Navigator.pop(context);
+                  placeholderCallbackForButtons();
+                },
+              ),
+            ],
+          ),
         ),
       ),
       body: ListView(
