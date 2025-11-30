@@ -1,12 +1,30 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:union_shop/models/product.dart';
 
-class ProductPage extends StatelessWidget {
+class ProductPage extends StatefulWidget {
   final Product product;
   const ProductPage({Key? key, required this.product}) : super(key: key);
 
   @override
+  State<ProductPage> createState() => _ProductPageState();
+}
+
+class _ProductPageState extends State<ProductPage> {
+  String? _selectedSize;
+  String? _selectedColor;
+  int? _selectedQty;
+
+  @override
+  void initState() {
+    super.initState();
+    // leave selections empty so the UI shows hint text by default
+    _selectedQty = null;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final product = widget.product;
+
     return Scaffold(
       appBar: AppBar(title: Text(product.title)),
       body: SingleChildScrollView(
@@ -61,34 +79,34 @@ class ProductPage extends StatelessWidget {
             const SizedBox(height: 12),
             Text(product.description),
             const SizedBox(height: 16),
-            // Row with Size, Color, Quantity selectors (non-functional)
+            // Row with Size, Color, Quantity selectors
             Row(
               children: [
                 Expanded(
                   child: DropdownButton<String>(
                     isExpanded: true,
-                    value: null,
+                    value: _selectedSize,
                     hint: const Text('Size'),
                     items: const [
                       DropdownMenuItem(value: 'S', child: Text('S')),
                       DropdownMenuItem(value: 'M', child: Text('M')),
                       DropdownMenuItem(value: 'L', child: Text('L')),
                     ],
-                    onChanged: (_) {}, // placeholder
+                    onChanged: (v) => setState(() => _selectedSize = v),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: DropdownButton<String>(
                     isExpanded: true,
-                    value: null,
+                    value: _selectedColor,
                     hint: const Text('Color'),
                     items: const [
                       DropdownMenuItem(value: 'Red', child: Text('Red')),
                       DropdownMenuItem(value: 'Blue', child: Text('Blue')),
                       DropdownMenuItem(value: 'Black', child: Text('Black')),
                     ],
-                    onChanged: (_) {}, // placeholder
+                    onChanged: (v) => setState(() => _selectedColor = v),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -96,7 +114,7 @@ class ProductPage extends StatelessWidget {
                 Expanded(
                   child: DropdownButton<int>(
                     isExpanded: true,
-                    value: null,
+                    value: _selectedQty,
                     hint: const Text('Qty'),
                     items: List<DropdownMenuItem<int>>.generate(
                       10,
@@ -105,29 +123,29 @@ class ProductPage extends StatelessWidget {
                         child: Text('${index + 1}'),
                       ),
                     ),
-                    onChanged: (_) {}, // placeholder
+                    onChanged: (v) => setState(() => _selectedQty = v),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-            // Full-width Add to cart button (non-functional)
-            SizedBox(
+            // Full-width Add to cart button (UI only)
+            const SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {}, // placeholder - add-to-cart implementation is out of scope
-                child: const Padding(
+                onPressed: null,
+                child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 12),
                   child: Text('Add to cart', style: TextStyle(fontSize: 16)),
                 ),
               ),
             ),
             const SizedBox(height: 8),
-            SizedBox(
+            const SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {},
-                child: const Padding(
+                onPressed: null,
+                child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 12),
                   child: Text('Buy with shop', style: TextStyle(fontSize: 16)),
                 ),
@@ -135,9 +153,9 @@ class ProductPage extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             // Share button at the bottom of the page (non-functional)
-            Align(
+            const Align(
               alignment: Alignment.centerRight,
-              child: OutlinedButton(onPressed: () {}, child: const Text('Share')),
+              child: OutlinedButton(onPressed: null, child: Text('Share')),
             ),
             const SizedBox(height: 8),
           ],
