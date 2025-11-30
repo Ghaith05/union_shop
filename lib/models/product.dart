@@ -7,6 +7,7 @@ class Product {
   final bool onSale;
   final List<String> images;
   final String collectionId;
+  final String? category; // NEWflut 
 
   Product({
     required this.id,
@@ -17,6 +18,7 @@ class Product {
     this.onSale = false,
     required this.images,
     required this.collectionId,
+    this.category, // NEW
   });
 
   // Simple helper for tests and sample-data initialization
@@ -29,6 +31,7 @@ class Product {
     bool onSale = false,
     String description = '',
     List<String>? images,
+    String? category, // NEW
   }) {
     return Product(
       id: id,
@@ -39,6 +42,7 @@ class Product {
       onSale: onSale,
       images: images ?? const [],
       collectionId: collectionId,
+      category: category, // NEW
     );
   }
 }

@@ -50,6 +50,7 @@ final List<Product> sampleProducts = [
     price: 4.99,
     images: ['assets/images/products/union_stickers.png'],
     description: 'Sticker set.',
+    category: 'Accessories', // NEW
   ),
   // Sale collection items (images to be added by user)
   Product.sample(
@@ -61,15 +62,17 @@ final List<Product> sampleProducts = [
     onSale: true,
     images: ['assets/images/products/a5_notebook.png'],
     description: 'Classic A5 notebook — lined pages, soft cover.',
+    category: 'Accessories', // NEW
   ),
   Product.sample(
     id: 'p5',
     title: 'Union Joggers',
-    collectionId: 'c3',
+    collectionId: 'c3', // keep in Sale collection
     price: 49.99,
     salePrice: 29.99,
     onSale: true,
     images: ['assets/images/products/union_jogger.png'],
     description: 'Comfortable joggers with embroidered logo.',
+    category: 'Clothing', // NEW
   ),
 ];
