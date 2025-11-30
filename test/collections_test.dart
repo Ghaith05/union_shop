@@ -82,4 +82,26 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.textContaining('Page 1 of'), findsOneWidget);
   });
+
+   testWidgets('filtering updates visible collections', (WidgetTester tester) async {
+    await tester.pumpWidget(const MaterialApp(home: CollectionsPage()));
+    await tester.pumpAndSettle();
+
+    // Use a substring of the first collection's name to filter
+    final targetName = sampleCollections.first.name;
+    final query = targetName.split(' ').first;
+
+    // Type into the search field
+    await tester.enterText(find.byKey(const ValueKey('collections-filter')), query);
+    await tester.pumpAndSettle();
+
+    // Expect the target collection to be visible
+    expect(find.text(targetName), findsWidgets);
+
+    // Pick a collection that does not contain the query and ensure it's hidden
+    final nonMatch = sampleCollections.firstWhere((c) => !c.name.toLowerCase().contains(query.toLowerCase()), orElse: () => sampleCollections.first);
+    if (nonMatch.name != targetName) {
+      expect(find.text(nonMatch.name), findsNothing);
+    }
+  });
 }
