@@ -20,8 +20,8 @@ class AuthenticationPage extends StatelessWidget {
         ),
         body: const TabBarView(
           children: [
-            Center(child: Text('Login tab placeholder')), // replaced in later commits
-            Center(child: Text('Signup tab placeholder')),
+            LoginForm(),
+            SignupForm(),
           ],
         ),
       ),
@@ -51,7 +51,8 @@ class _LoginFormState extends State<LoginForm> {
   void _submit() {
     if (_formKey.currentState?.validate() ?? false) {
       // placeholder feedback — later commit will wire to real auth
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login submitted')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Login submitted')));
     }
   }
 
@@ -77,7 +78,8 @@ class _LoginFormState extends State<LoginForm> {
               controller: _passwordCtl,
               decoration: const InputDecoration(labelText: 'Password'),
               obscureText: true,
-              validator: (v) => (v == null || v.length < 6) ? 'Password too short' : null,
+              validator: (v) =>
+                  (v == null || v.length < 6) ? 'Password too short' : null,
             ),
             const SizedBox(height: 20),
             ElevatedButton(
@@ -115,7 +117,8 @@ class _SignupFormState extends State<SignupForm> {
 
   void _submit() {
     if (_formKey.currentState?.validate() ?? false) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Signup submitted')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Signup submitted')));
     }
   }
 
@@ -133,7 +136,8 @@ class _SignupFormState extends State<SignupForm> {
                 key: const Key('signup_name'),
                 controller: _nameCtl,
                 decoration: const InputDecoration(labelText: 'Full name'),
-                validator: (v) => (v == null || v.isEmpty) ? 'Enter name' : null,
+                validator: (v) =>
+                    (v == null || v.isEmpty) ? 'Enter name' : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -141,7 +145,8 @@ class _SignupFormState extends State<SignupForm> {
                 controller: _emailCtl,
                 decoration: const InputDecoration(labelText: 'Email'),
                 keyboardType: TextInputType.emailAddress,
-                validator: (v) => (v == null || v.isEmpty) ? 'Enter email' : null,
+                validator: (v) =>
+                    (v == null || v.isEmpty) ? 'Enter email' : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -149,7 +154,8 @@ class _SignupFormState extends State<SignupForm> {
                 controller: _passwordCtl,
                 decoration: const InputDecoration(labelText: 'Password'),
                 obscureText: true,
-                validator: (v) => (v == null || v.length < 6) ? 'Password too short' : null,
+                validator: (v) =>
+                    (v == null || v.length < 6) ? 'Password too short' : null,
               ),
               const SizedBox(height: 20),
               ElevatedButton(
