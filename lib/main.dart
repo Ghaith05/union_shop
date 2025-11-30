@@ -3,7 +3,6 @@ import 'package:union_shop/views/product_page.dart';
 import 'package:union_shop/views/about_page.dart';
 import 'package:union_shop/views/collections_page.dart';
 import 'package:union_shop/data/sample_data.dart';
-import 'package:union_shop/views/collection_page.dart';
 import 'package:union_shop/widgets/footer.dart';
 import 'package:union_shop/views/authentication_page.dart';
 
