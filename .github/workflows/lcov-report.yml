@@ -35,10 +35,8 @@ jobs:
           path: coverage/lcov.info
 
       - name: Post LCOV coverage comment on PR
+        if: github.event_name == 'pull_request'
         uses: romeovs/lcov-reporter-action@v0.2.16
         with:
           lcov-file: ./coverage/lcov.info
-          delete-old-comments: true
-          title: Coverage Report
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
