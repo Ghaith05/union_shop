@@ -58,4 +58,28 @@ void main() {
     final lastPosAfter = tester.getTopLeft(find.text(lastName));
     expect(firstPosAfter.dy > lastPosAfter.dy, isTrue);
   });
+
+  testWidgets('pagination next and prev update page indicator', (WidgetTester tester) async {
+    await tester.pumpWidget(const MaterialApp(home: CollectionsPage()));
+    await tester.pumpAndSettle();
+
+    // Change page size to 2 so there are multiple pages
+    await tester.tap(find.byKey(const ValueKey('collections-page-size')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('2').last);
+    await tester.pumpAndSettle();
+
+    // Should start on page 1
+    expect(find.textContaining('Page 1 of'), findsOneWidget);
+
+    // Navigate to next page
+    await tester.tap(find.byKey(const ValueKey('collections-next')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Page 2 of'), findsOneWidget);
+
+    // Navigate back
+    await tester.tap(find.byKey(const ValueKey('collections-prev')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Page 1 of'), findsOneWidget);
+  });
 }
