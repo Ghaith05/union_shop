@@ -23,22 +23,10 @@ class _CollectionPageState extends State<CollectionPage> {
   String _selectedSort = 'Featured';
   int _pageIndex = 0;
   int _pageSize = 8;
-  // Map collectionId -> category used for filtering (lightweight mapping)
-  final Map<String, String> _collectionCategory = {
-    'c1': 'Clothing',
-    'c2': 'Clothing',
-    // c3 is the Sale collection; don't classify the whole collection as
-    // Accessories (that caused all sale items to show as accessories).
-    'c3': 'Sale',
-  };
-  // Optional per-product category overrides (so a product can be an accessory
-  // even if its collection is tagged differently).
-  final Map<String, String> _productCategory = {
-    'p3': 'Accessories', // Sticker Pack (New Arrivals)
-    'p4': 'Accessories', // A5 Notebook (Sale)
-    'p5':
-        'Clothing', // Union Joggers (Sale) - classify as clothing when filtering
-  };
+  bool _loadMoreMode = false;
+  // Note: product categories are now stored on the Product model (`category`).
+  // Any previous view-level category mappings were removed in favor of
+  // data-driven filtering.
 
   @override
   void initState() {
@@ -48,7 +36,15 @@ class _CollectionPageState extends State<CollectionPage> {
       // Product model doesn't include categories in sample data.
       setState(() {
         _products = list;
-        _filterOptions = ['All products', 'Clothing', 'Accessories'];
+        // Compute categories present in the loaded products
+        final categories = _products
+            .map((p) => p.category)
+            .where((c) => c != null && c.trim().isNotEmpty)
+            .map((c) => c!.trim())
+            .toSet()
+            .toList()
+          ..sort();
+        _filterOptions = ['All products', ...categories];
         _selectedFilter = 'All products';
         _selectedSort = 'Featured';
         _loading = false;
@@ -95,28 +91,37 @@ class _CollectionPageState extends State<CollectionPage> {
     // Apply filter using lightweight mapping; allow product-level overrides so
     // that a product (e.g. Sticker Pack) can be shown under Accessories even
     // if its collection is classified differently.
-    final filtered = _products.where((p) {
-      if (_selectedFilter == 'All products') return true;
-      final prodCat = _productCategory[p.id];
-      final cat = prodCat ?? _collectionCategory[p.collectionId] ?? '';
-      return cat.toLowerCase() == _selectedFilter.toLowerCase();
-    }).toList();
+    // Show only products that belong to this collection, then apply selected category filter
+        // --- pipeline: filter -> sort -> paginate/load-more ---
+    // 1) Start from products that belong to this collection
+    final base = _products.where((p) => p.collectionId == widget.collection.id).toList();
 
-    // Apply sort
+    // 2) Apply category filter (data-driven)
+    final filtered = _selectedFilter == 'All products'
+        ? base
+        : base.where((p) => (p.category ?? '').toLowerCase() == _selectedFilter.toLowerCase()).toList();
+
+    // 3) Apply sort
     if (_selectedSort == 'Price ↑') {
       filtered.sort((a, b) => a.price.compareTo(b.price));
     } else if (_selectedSort == 'Price ↓') {
       filtered.sort((a, b) => b.price.compareTo(a.price));
-    } // Featured: original order
+    } // otherwise keep original (Featured)
 
-    // Pagination calculations
-    const pageSizeOptions = [1, 2, 4];
+    // 4) Pagination calculations (pageSize computed from options)
+    // pageSizeOptions is defined lower or above; keep it consistent
+    const pageSizeOptions = [1, 2, 4]; // (or [4,8,16] if you prefer)
     final int pageSize =
         pageSizeOptions.contains(_pageSize) ? _pageSize : pageSizeOptions.first;
     final totalPages = (filtered.length / pageSize).ceil().clamp(1, 999);
     final clampedPageIndex = _pageIndex.clamp(0, totalPages - 1);
     final start = clampedPageIndex * pageSize;
-    final visibleProducts = filtered.skip(start).take(pageSize).toList();
+
+    // 5) Build visibleProducts. If _loadMoreMode is true we take an increasing prefix
+    //    (load more appends) otherwise we show the current page slice.
+    final visibleProducts = _loadMoreMode
+        ? filtered.take((clampedPageIndex + 1) * pageSize).toList()
+        : filtered.skip(start).take(pageSize).toList();
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.collection.name)),
