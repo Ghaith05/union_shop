@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:union_shop/widgets/product_card.dart';
+import 'package:union_shop/views/product_page.dart';
 import 'package:union_shop/views/about_page.dart';
 import 'package:union_shop/views/collections_page.dart';
 import 'package:union_shop/data/sample_data.dart';
@@ -156,142 +156,6 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
           ),
-          // Sale banner (tappable) - opens the Sale collection
-          Builder(
-            builder: (context) {
-              final saleCollection = sampleCollections.firstWhere(
-                (c) => c.name.toLowerCase() == 'sale' || c.id == 'c3',
-                orElse: () => sampleCollections.first,
-              );
-              return Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: GestureDetector(
-                  key: const Key('sale-collection-card'),
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (ctx) =>
-                            CollectionPage(collection: saleCollection),
-                      ),
-                    );
-                  },
-                  child: Card(
-                    clipBehavior: Clip.hardEdge,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8)),
-                    child: SizedBox(
-                      height: 140,
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          Image.asset(
-                            saleCollection.image.isNotEmpty
-                                ? saleCollection.image.first
-                                : 'assets/images/collections/Sale.png',
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) =>
-                                Container(color: Colors.grey[300]),
-                          ),
-                          // ignore: deprecated_member_use
-                          Container(color: Colors.black.withOpacity(0.35)),
-                          Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  saleCollection.name,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 6),
-                                const Text('Up to 50% off — shop sale items',
-                                    style: TextStyle(color: Colors.white70)),
-                              ],
-                            ),
-                          ),
-                          Positioned(
-                            left: 8,
-                            top: 8,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: Colors.redAccent,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: const Text('SALE',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold)),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-
-          // Categories
-          Container(
-            color: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Categories',
-                    style:
-                        TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-                const SizedBox(height: 12),
-                SizedBox(
-                  height: 120,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 6,
-                    separatorBuilder: (_, __) => const SizedBox(width: 12),
-                    itemBuilder: (context, i) {
-                      return InkWell(
-                        onTap: placeholderCallbackForButtons,
-                        child: Container(
-                          width: 110,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[100],
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(color: Colors.grey[200]!),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                height: 56,
-                                width: 56,
-                                decoration: BoxDecoration(
-                                    color: Colors.grey[200],
-                                    borderRadius: BorderRadius.circular(6)),
-                                child: const Icon(Icons.category,
-                                    color: Colors.grey),
-                              ),
-                              const SizedBox(height: 8),
-                              Text('Category ${i + 1}',
-                                  style: const TextStyle(fontSize: 13)),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 8),
 
           // Featured
           Container(
@@ -312,21 +176,95 @@ class HomeScreen extends StatelessWidget {
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
                   childAspectRatio: 3 / 1.2,
-                  children: List.generate(4, (i) {
+                  children: [
+                    // Featured products (ordered): hoodie, t-shirt, jogger, notebook
+                    'p2', // Union Hoodie
+                    'p1', // Union T-Shirt
+                    'p5', // Union Joggers
+                    'p4', // A5 Notebook
+                  ].map((id) {
+                    final p = sampleProducts.firstWhere((s) => s.id == id);
                     return Card(
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         side: BorderSide(color: Colors.grey[200]!),
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      child: ProductCard(
-                        title: 'Product ${i + 1}',
-                        price: '£12.00',
-                        imageUrl:
-                            'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (ctx) => ProductPage(product: p),
+                            ),
+                          );
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: p.images.isNotEmpty
+                                  ? Image.asset(
+                                      p.images.first,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) => Container(
+                                        color: Colors.grey[300],
+                                        child: const Center(
+                                          child: Icon(Icons.image_not_supported,
+                                              color: Colors.grey),
+                                        ),
+                                      ),
+                                    )
+                                  : Container(color: Colors.grey[300]),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 8),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    p.title,
+                                    style: const TextStyle(
+                                        fontSize: 14, color: Colors.black),
+                                    maxLines: 2,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  // Show sale price when applicable
+                                  p.onSale && p.salePrice != null
+                                      ? Row(
+                                          children: [
+                                            Text(
+                                              '£${p.price.toStringAsFixed(2)}',
+                                              style: const TextStyle(
+                                                decoration:
+                                                    TextDecoration.lineThrough,
+                                                color: Colors.grey,
+                                                fontSize: 13,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              '£${p.salePrice!.toStringAsFixed(2)}',
+                                              style: const TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.redAccent,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ],
+                                        )
+                                      : Text(
+                                          '£${p.price.toStringAsFixed(2)}',
+                                          style: const TextStyle(
+                                              fontSize: 13, color: Colors.grey),
+                                        ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     );
-                  }),
+                  }).toList(),
                 ),
               ],
             ),
