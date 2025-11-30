@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:union_shop/data/sample_data.dart';
+import 'package:union_shop/data/collection_service.dart';
 import 'package:union_shop/views/collection_page.dart';
 
 class CollectionsPage extends StatefulWidget {
@@ -17,6 +18,31 @@ class _CollectionsPageState extends State<CollectionsPage> {
   // Pagination state
   int _pageIndex = 0;
   int _pageSize = 4;
+  // Filter state (search box)
+  String _filter = '';
+
+  // Fetched collections (populated from service)
+  List<CollectionItem> _allCollections = [];
+  bool _loading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    // Load collections from the (tiny) service. Keep this minimal so tests
+    // can pump and settle after a microtask if necessary.
+    fetchCollections().then((list) {
+      setState(() {
+        _allCollections = list;
+        _loading = false;
+      });
+    }).catchError((e) {
+      setState(() {
+        _error = e.toString();
+        _loading = false;
+      });
+    });
+  }
 
   void _openCollection(BuildContext context, CollectionItem collection) {
     // Use a direct push with the typed object (simpler for coursework/tests)
@@ -27,8 +53,28 @@ class _CollectionsPageState extends State<CollectionsPage> {
 
   @override
   Widget build(BuildContext context) {
+    // If we're still loading, show a small progress indicator.
+    if (_loading) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Collections'),
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_error != null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Collections')),
+        body: Center(child: Text('Error loading collections: $_error')),
+      );
+    }
+
     // Prepare a sorted copy of collections according to state
-    final collectionsToShow = List<CollectionItem>.from(sampleCollections)
+    // Start from the fetched data, apply filter then sort
+    final collectionsToShow = List<CollectionItem>.from(_allCollections)
+        .where((c) => c.name.toLowerCase().contains(_filter.toLowerCase()))
+        .toList()
       ..sort((a, b) =>
           _sortAscending ? a.name.compareTo(b.name) : b.name.compareTo(a.name));
 
@@ -47,9 +93,26 @@ class _CollectionsPageState extends State<CollectionsPage> {
         padding: const EdgeInsets.all(12.0),
         child: Column(
           children: [
-            // Sort control (UI-only)
+            // Filter + Sort controls (UI-only)
             Row(
               children: [
+                // Filter / search box
+                Expanded(
+                  child: TextField(
+                    key: const ValueKey('collections-filter'),
+                    decoration: const InputDecoration(
+                      labelText: 'Search collections',
+                      prefixIcon: Icon(Icons.search),
+                    ),
+                    onChanged: (v) => setState(() {
+                      _filter = v;
+                      _pageIndex = 0; // reset page when filtering
+                    }),
+                  ),
+                ),
+                const SizedBox(width: 12),
+
+                // Sort dropdown
                 const Text('Sort:'),
                 const SizedBox(width: 8),
                 DropdownButton<bool>(
@@ -65,7 +128,7 @@ class _CollectionsPageState extends State<CollectionsPage> {
                   },
                 ),
                 const Spacer(),
-                // (Optional) Visual hint of number of collections
+                // (Optional) Visual hint of number of collections after filter
                 Text('${collectionsToShow.length} collections'),
               ],
             ),
