@@ -72,34 +72,56 @@ class _CollectionPageState extends State<CollectionPage> {
       appBar: AppBar(title: Text(widget.collection.name)),
       body: Column(
         children: [
-          // small non-functional filter row
+          // --- collection top-bar (filter/sort) ---
           Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              children: [
-                DropdownButton<String>(
-                  value: 'All',
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: LayoutBuilder(builder: (context, constraints) {
+              final isWide = constraints.maxWidth > 800;
+              return Wrap(
+                spacing: 12,
+                runSpacing: 8,
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Row(mainAxisSize: MainAxisSize.min, children: [
+                    const Text('FILTER BY', style: TextStyle(letterSpacing: 1.2, fontSize: 12)),
+                    const SizedBox(width: 8),
+                    DropdownButton<String>(
+                    key: const ValueKey('collection-filter-dropdown'),
+                    value: 'All products',
+                    items: const [
+                      DropdownMenuItem(value: 'All products', child: Text('All products')),
+                      DropdownMenuItem(value: 'Clothes', child: Text('Clothes')),
+                      DropdownMenuItem(value: 'Merchandise', child: Text('Merchandise')),
+                    ],
+                    onChanged: (_) {}, // wire later
+                  ),
+                ]),
+                Row(mainAxisSize: MainAxisSize.min, children: [
+                  const Text('SORT BY', style: TextStyle(letterSpacing: 1.2, fontSize: 12)),
+                  const SizedBox(width: 8),
+                  DropdownButton<String>(
+                  key: const ValueKey('collection-sort-dropdown'),
+                  value: 'Featured',
                   items: const [
-                    DropdownMenuItem(value: 'All', child: Text('All')),
-                    DropdownMenuItem(value: 'Low', child: Text('Price: Low')),
-                    DropdownMenuItem(value: 'High', child: Text('Price: High')),
+                    DropdownMenuItem(value: 'Featured', child: Text('Featured')),
+                    DropdownMenuItem(value: 'Price ↑', child: Text('Price ↑')),
+                    DropdownMenuItem(value: 'Price ↓', child: Text('Price ↓')),
                   ],
-                  onChanged: (_) {}, // placeholder
+                  onChanged: (_) {}, // wire later
                 ),
-                const SizedBox(width: 12),
-                DropdownButton<String>(
-                  value: 'All',
-                  items: const [
-                    DropdownMenuItem(value: 'All', child: Text('All')),
-                    DropdownMenuItem(value: 'Size', child: Text('Size')),
-                    DropdownMenuItem(value: 'Color', child: Text('Color')),
-                  ],
-                  onChanged: (_) {},
-                ),
-              ],
+            ]),
+            ConstrainedBox(
+              constraints: BoxConstraints(minWidth: isWide ? 120 : 0),
+              child: Align(
+                alignment: isWide ? Alignment.centerRight : Alignment.centerLeft,
+                child: Text('${_products.length} products', key: const ValueKey('collection-count')),
+              ),
             ),
-          ),
-
+          ],
+        );
+      }),
+    ),
           // product list
           Expanded(
             child: products.isEmpty
