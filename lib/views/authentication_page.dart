@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// Authentication page scaffold with two tabs: Login and Signup.
+/// Both tabs show non-functional placeholder widgets (UI only).
 class AuthenticationPage extends StatelessWidget {
   const AuthenticationPage({Key? key}) : super(key: key);
 
@@ -29,142 +30,73 @@ class AuthenticationPage extends StatelessWidget {
   }
 }
 
-class LoginForm extends StatefulWidget {
+class LoginForm extends StatelessWidget {
   const LoginForm({Key? key}) : super(key: key);
-
-  @override
-  State<LoginForm> createState() => _LoginFormState();
-}
-
-class _LoginFormState extends State<LoginForm> {
-  final _formKey = GlobalKey<FormState>(debugLabel: 'login_form');
-  final _emailCtl = TextEditingController();
-  final _passwordCtl = TextEditingController();
-
-  @override
-  void dispose() {
-    _emailCtl.dispose();
-    _passwordCtl.dispose();
-    super.dispose();
-  }
-
-  void _submit() {
-    if (_formKey.currentState?.validate() ?? false) {
-      // placeholder feedback — later commit will wire to real auth
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Login submitted')));
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TextFormField(
-              key: const Key('login_email'),
-              controller: _emailCtl,
-              decoration: const InputDecoration(labelText: 'Email'),
-              keyboardType: TextInputType.emailAddress,
-              validator: (v) => (v == null || v.isEmpty) ? 'Enter email' : null,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              key: const Key('login_password'),
-              controller: _passwordCtl,
-              decoration: const InputDecoration(labelText: 'Password'),
-              obscureText: true,
-              validator: (v) =>
-                  (v == null || v.length < 6) ? 'Password too short' : null,
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              key: const Key('login_button'),
-              onPressed: _submit,
-              child: const Text('Log in'),
-            ),
-          ],
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: const [
+          TextField(
+            key: Key('login_email'),
+            decoration: InputDecoration(labelText: 'Email'),
+            keyboardType: TextInputType.emailAddress,
+          ),
+          SizedBox(height: 12),
+          TextField(
+            key: Key('login_password'),
+            decoration: InputDecoration(labelText: 'Password'),
+            obscureText: true,
+          ),
+          SizedBox(height: 20),
+          ElevatedButton(
+            key: Key('login_button'),
+            onPressed: null,
+            child: Text('Log in'),
+          ),
+        ],
       ),
     );
   }
 }
 
-class SignupForm extends StatefulWidget {
+class SignupForm extends StatelessWidget {
   const SignupForm({Key? key}) : super(key: key);
-
-  @override
-  State<SignupForm> createState() => _SignupFormState();
-}
-
-class _SignupFormState extends State<SignupForm> {
-  final _formKey = GlobalKey<FormState>(debugLabel: 'signup_form');
-  final _nameCtl = TextEditingController();
-  final _emailCtl = TextEditingController();
-  final _passwordCtl = TextEditingController();
-
-  @override
-  void dispose() {
-    _nameCtl.dispose();
-    _emailCtl.dispose();
-    _passwordCtl.dispose();
-    super.dispose();
-  }
-
-  void _submit() {
-    if (_formKey.currentState?.validate() ?? false) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Signup submitted')));
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              TextFormField(
-                key: const Key('signup_name'),
-                controller: _nameCtl,
-                decoration: const InputDecoration(labelText: 'Full name'),
-                validator: (v) =>
-                    (v == null || v.isEmpty) ? 'Enter name' : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                key: const Key('signup_email'),
-                controller: _emailCtl,
-                decoration: const InputDecoration(labelText: 'Email'),
-                keyboardType: TextInputType.emailAddress,
-                validator: (v) =>
-                    (v == null || v.isEmpty) ? 'Enter email' : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                key: const Key('signup_password'),
-                controller: _passwordCtl,
-                decoration: const InputDecoration(labelText: 'Password'),
-                obscureText: true,
-                validator: (v) =>
-                    (v == null || v.length < 6) ? 'Password too short' : null,
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                key: const Key('signup_button'),
-                onPressed: _submit,
-                child: const Text('Create account'),
-              ),
-            ],
-          ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: const [
+            TextField(
+              key: Key('signup_name'),
+              decoration: InputDecoration(labelText: 'Full name'),
+            ),
+            SizedBox(height: 12),
+            TextField(
+              key: Key('signup_email'),
+              decoration: InputDecoration(labelText: 'Email'),
+              keyboardType: TextInputType.emailAddress,
+            ),
+            SizedBox(height: 12),
+            TextField(
+              key: Key('signup_password'),
+              decoration: InputDecoration(labelText: 'Password'),
+              obscureText: true,
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              key: Key('signup_button'),
+              onPressed: null,
+              child: Text('Create account'),
+            ),
+          ],
         ),
       ),
     );
