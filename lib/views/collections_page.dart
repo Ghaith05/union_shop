@@ -14,6 +14,9 @@ class CollectionsPage extends StatefulWidget {
 class _CollectionsPageState extends State<CollectionsPage> {
   // Sort state: true = ascending (A → Z), false = descending (Z → A)
   bool _sortAscending = true;
+  // Pagination state
+  int _pageIndex = 0;
+  int _pageSize = 4;
 
   void _openCollection(BuildContext context, CollectionItem collection) {
     // Use a direct push with the typed object (simpler for coursework/tests)
@@ -26,7 +29,15 @@ class _CollectionsPageState extends State<CollectionsPage> {
   Widget build(BuildContext context) {
     // Prepare a sorted copy of collections according to state
     final collectionsToShow = List<CollectionItem>.from(sampleCollections)
-      ..sort((a, b) => _sortAscending ? a.name.compareTo(b.name) : b.name.compareTo(a.name));
+      ..sort((a, b) =>
+          _sortAscending ? a.name.compareTo(b.name) : b.name.compareTo(a.name));
+
+    // Pagination calculations (computed after we have collectionsToShow)
+    final totalPages =
+        (collectionsToShow.length / _pageSize).ceil().clamp(1, 999);
+    final clampedPageIndex = _pageIndex.clamp(0, totalPages - 1);
+    final start = clampedPageIndex * _pageSize;
+    final visible = collectionsToShow.skip(start).take(_pageSize).toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -63,7 +74,7 @@ class _CollectionsPageState extends State<CollectionsPage> {
             // Grid of collections
             Expanded(
               child: GridView.builder(
-                itemCount: collectionsToShow.length,
+                itemCount: visible.length,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   childAspectRatio: 1.6,
@@ -71,7 +82,7 @@ class _CollectionsPageState extends State<CollectionsPage> {
                   mainAxisSpacing: 12,
                 ),
                 itemBuilder: (context, index) {
-                  final c = collectionsToShow[index];
+                  final c = visible[index];
                   return GestureDetector(
                     key: ValueKey('collection-card-${c.id}'),
                     onTap: () => _openCollection(context, c),
@@ -87,7 +98,9 @@ class _CollectionsPageState extends State<CollectionsPage> {
                               imgSrc = c.image as String;
                             } else {
                               final list = c.image as List;
-                              if (list.isNotEmpty) imgSrc = list.first as String;
+                              if (list.isNotEmpty) {
+                                imgSrc = list.first as String;
+                              }
                             }
 
                             if (imgSrc == null) {
@@ -98,7 +111,8 @@ class _CollectionsPageState extends State<CollectionsPage> {
                             return Image.asset(
                               imgSrc,
                               fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => Container(color: Colors.grey[300]),
+                              errorBuilder: (_, __, ___) =>
+                                  Container(color: Colors.grey[300]),
                             );
                           }),
                           Container(
@@ -117,7 +131,8 @@ class _CollectionsPageState extends State<CollectionsPage> {
                             child: Text(
                               c.name,
                               style: const TextStyle(
-                                  color: Colors.white, fontWeight: FontWeight.bold),
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
                             ),
                           ),
                         ],
@@ -126,6 +141,45 @@ class _CollectionsPageState extends State<CollectionsPage> {
                   );
                 },
               ),
+            ),
+            const SizedBox(height: 12),
+            // Pagination controls
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                DropdownButton<int>(
+                  key: const ValueKey('collections-page-size'),
+                  value: _pageSize,
+                  items: const [2, 4, 8]
+                      .map((s) => DropdownMenuItem(value: s, child: Text('$s')))
+                      .toList(),
+                  onChanged: (v) {
+                    if (v == null) return;
+                    setState(() {
+                      _pageSize = v;
+                      _pageIndex = 0; // reset page when size changes
+                    });
+                  },
+                ),
+                const SizedBox(width: 12),
+                TextButton(
+                  key: const ValueKey('collections-prev'),
+                  onPressed: clampedPageIndex > 0
+                      ? () => setState(() => _pageIndex = clampedPageIndex - 1)
+                      : null,
+                  child: const Text('Prev'),
+                ),
+                const SizedBox(width: 8),
+                Text('Page ${clampedPageIndex + 1} of $totalPages'),
+                const SizedBox(width: 8),
+                TextButton(
+                  key: const ValueKey('collections-next'),
+                  onPressed: (clampedPageIndex + 1) < totalPages
+                      ? () => setState(() => _pageIndex = clampedPageIndex + 1)
+                      : null,
+                  child: const Text('Next'),
+                ),
+              ],
             ),
           ],
         ),
