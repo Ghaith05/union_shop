@@ -77,51 +77,55 @@ class HomeScreen extends StatelessWidget {
                 const Spacer(),
                 // Account icon (navigates to authentication)
                 IconButton(
-                key: const ValueKey('nav-auth'),
-                icon: const Icon(Icons.person_outline, color: Colors.black),
-                tooltip: 'Account',
-                onPressed: () {
-                  Navigator.pushNamed(context, '/auth');
-                },
-              ),
-              // Cart icon with badge (uses CartService ValueNotifier)
-              ValueListenableBuilder<List<CartItem>>(
-              valueListenable: CartService().items,
-              builder: (context, items, _) {
-                final count = items.fold<int>(0, (sum, it) => sum + it.quantity);
-                return Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    IconButton(
-                      key: const ValueKey('nav-cart'),
-                      icon: const Icon(Icons.shopping_bag_outlined, color: Colors.black),
-                      tooltip: 'Cart',
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/cart');
-                      },
-                    ),
-                    if (count > 0)
-                      Positioned(
-                        right: 4,
-                        top: 6,
-                        child: Container(
-                          padding: const EdgeInsets.all(2),
-                          decoration: const BoxDecoration(
-                            color: Colors.redAccent,
-                            shape: BoxShape.circle,
-                          ),
-                          constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
-                          child: Text(
-                            '$count',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(color: Colors.white, fontSize: 11),
-                          ),
+                  key: const ValueKey('nav-auth'),
+                  icon: const Icon(Icons.person_outline, color: Colors.black),
+                  tooltip: 'Account',
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/auth');
+                  },
+                ),
+                // Cart icon with badge (uses CartService ValueNotifier)
+                ValueListenableBuilder<List<CartItem>>(
+                  valueListenable: CartService().items,
+                  builder: (context, items, _) {
+                    final count =
+                        items.fold<int>(0, (sum, it) => sum + it.quantity);
+                    return Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        IconButton(
+                          key: const ValueKey('nav-cart'),
+                          icon: const Icon(Icons.shopping_bag_outlined,
+                              color: Colors.black),
+                          tooltip: 'Cart',
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/cart');
+                          },
                         ),
-                      ),
-                    ],
-                  );
-                },
-              ),
+                        if (count > 0)
+                          Positioned(
+                            right: 4,
+                            top: 6,
+                            child: Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: const BoxDecoration(
+                                color: Colors.redAccent,
+                                shape: BoxShape.circle,
+                              ),
+                              constraints: const BoxConstraints(
+                                  minWidth: 18, minHeight: 18),
+                              child: Text(
+                                '$count',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                    color: Colors.white, fontSize: 11),
+                              ),
+                            ),
+                          ),
+                      ],
+                    );
+                  },
+                ),
               ] else ...[
                 const Spacer(),
                 IconButton(
@@ -172,14 +176,6 @@ class HomeScreen extends StatelessWidget {
                 },
               ),
               const Divider(),
-              ListTile(
-                key: const ValueKey('drawer-auth'),
-                title: const Text('Account'),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.pushNamed(context, '/auth');
-                },
-              ),
             ],
           ),
         ),
