@@ -22,3 +22,4 @@ flutter:
   assets:
     - assets/images/collections/
     - assets/images/products/
+    - assets/images/print_shack/
