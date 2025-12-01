@@ -59,9 +59,84 @@ class _PrintShackPageState extends State<PrintShackPage> {
               ),
             ],
           );
+          Widget rightForm = Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 12),
+              Text('Personalisation', style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 8),
+              const Text('£3.00', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 6),
+              const Text('Tax included.', style: TextStyle(color: Colors.grey)),
+              const SizedBox(height: 20),
+              const Text('Per Line:'),
+              const SizedBox(height: 8),
+              DropdownButton<String>(
+                key: const ValueKey('print-lines'),
+                value: 'One Line of Text',
+                items: const [
+                  DropdownMenuItem(value: 'One Line of Text', child: Text('One Line of Text')),
+                  DropdownMenuItem(value: 'Two Lines of Text', child: Text('Two Lines')),
+                ],
+                onChanged: (_) {},
+              ),
+              const SizedBox(height: 16),
+              const Text('Personalisation Line 1:'),
+              const SizedBox(height: 8),
+              const TextField(key: ValueKey('print-line1'), decoration: InputDecoration(border: OutlineInputBorder())),
+              const SizedBox(height: 16),
+              const Text('Personalisation Line 2:'),
+              const SizedBox(height: 8),
+              const TextField(key: ValueKey('print-line2'), decoration: InputDecoration(border: OutlineInputBorder())),
+              const SizedBox(height: 16),
+              const Text('Quantity'),
+              const SizedBox(height: 8),
+              SizedBox(
+                width: 88,
+                child: DropdownButton<int>(
+                  key: const ValueKey('print-qty'),
+                  value: 1,
+                  items: List<DropdownMenuItem<int>>.generate(10, (i) => DropdownMenuItem(value: i + 1, child: Text('${i + 1}'))),
+                  onChanged: (_) {},
+                ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  key: const ValueKey('print-add-to-cart'),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Color(0xFF4d2963)),
+                    foregroundColor: const Color(0xFF4d2963),
+                  ),
+                  onPressed: () {},
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 14.0),
+                    child: Text('ADD TO CART', style: TextStyle(letterSpacing: 1.5)),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text('£3 for one line of text! £5 for two!', style: TextStyle(color: Colors.grey)),
+            ],
+          );
+
+          // Commit B: show left image + right form skeleton on desktop; stack on mobile
           return Padding(
             padding: const EdgeInsets.all(16.0),
-            child: leftImage,
+            child: isDesktop
+                ? Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(flex: 2, child: leftImage),
+                      const SizedBox(width: 24),
+                      Expanded(flex: 3, child: rightForm),
+                    ],
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [leftImage, const SizedBox(height: 12), rightForm],
+                  ),
           );
         }),
       ),
