@@ -59,6 +59,29 @@ class HomeScreen extends StatelessWidget {
                       const Text('Shop', style: TextStyle(color: Colors.black)),
                 ),
                 const SizedBox(width: 8),
+                // Print Shack dropdown (desktop)
+                PopupMenuButton<int>(
+                  key: const ValueKey('nav-print'),
+                  onSelected: (v) {
+                    if (v == 1) Navigator.pushNamed(context, '/print-about');
+                    if (v == 2) Navigator.pushNamed(context, '/print');
+                  },
+                  itemBuilder: (ctx) => const [
+                    PopupMenuItem<int>(value: 1, child: Text('About')),
+                    PopupMenuItem<int>(
+                        value: 2, child: Text('Personalisation')),
+                  ],
+                  child: const Row(
+                    children: [
+                      Text(
+                        'The Print Shack',
+                        style: TextStyle(color: Colors.black, fontSize: 14),
+                      ),
+                      Icon(Icons.arrow_drop_down, color: Colors.black),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
                 TextButton(
                   key: const ValueKey('nav-sale'),
                   onPressed: placeholderCallbackForButtons,
@@ -128,10 +151,18 @@ class HomeScreen extends StatelessWidget {
                 ),
               ] else ...[
                 const Spacer(),
-                IconButton(
-                  key: const ValueKey('nav-menu'),
+                PopupMenuButton<int>(
+                  key: const ValueKey('nav-print'),
                   icon: const Icon(Icons.menu, color: Colors.grey, size: 20),
-                  onPressed: placeholderCallbackForButtons,
+                  onSelected: (v) {
+                    if (v == 1) Navigator.pushNamed(context, '/print-about');
+                    if (v == 2) Navigator.pushNamed(context, '/print');
+                  },
+                  itemBuilder: (ctx) => const [
+                    PopupMenuItem<int>(value: 1, child: Text('About')),
+                    PopupMenuItem<int>(
+                        value: 2, child: Text('Personalisation')),
+                  ],
                 ),
               ]
             ],
@@ -173,6 +204,35 @@ class HomeScreen extends StatelessWidget {
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.pushNamed(context, '/about');
+                },
+              ),
+              ListTile(
+                key: const ValueKey('drawer-print'),
+                title: const Text('Print Shack'),
+                onTap: () {
+                  Navigator.pop(context);
+                  showDialog<void>(
+                    context: context,
+                    builder: (ctx) => SimpleDialog(
+                      title: const Text('The Print Shack'),
+                      children: [
+                        SimpleDialogOption(
+                          onPressed: () {
+                            Navigator.of(ctx).pop();
+                            Navigator.pushNamed(context, '/print-about');
+                          },
+                          child: const Text('About'),
+                        ),
+                        SimpleDialogOption(
+                          onPressed: () {
+                            Navigator.of(ctx).pop();
+                            Navigator.pushNamed(context, '/print');
+                          },
+                          child: const Text('Personalisation'),
+                        ),
+                      ],
+                    ),
+                  );
                 },
               ),
               const Divider(),
