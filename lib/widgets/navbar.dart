@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:union_shop/views/product_page.dart';
+import 'package:union_shop/views/collection_page.dart';
 import 'package:union_shop/views/collections_page.dart';
 import 'package:union_shop/data/sample_data.dart';
 import 'package:union_shop/widgets/footer.dart';
@@ -16,8 +17,6 @@ class HomeScreen extends StatelessWidget {
     // Open the collections page (browse) instead of a product that requires an argument
     Navigator.pushNamed(context, CollectionsPage.routeName);
   }
-
-  void placeholderCallbackForButtons() {}
 
   @override
   Widget build(BuildContext context) {
@@ -47,14 +46,14 @@ class HomeScreen extends StatelessWidget {
               if (isDesktop) ...[
                 TextButton(
                   key: const ValueKey('nav-home'),
-                  onPressed: placeholderCallbackForButtons,
+                  onPressed: () => navigateToHome(context),
                   child:
                       const Text('Home', style: TextStyle(color: Colors.black)),
                 ),
                 const SizedBox(width: 8),
                 TextButton(
                   key: const ValueKey('nav-collections'),
-                  onPressed: placeholderCallbackForButtons,
+                  onPressed: () => navigateToProduct(context),
                   child:
                       const Text('Shop', style: TextStyle(color: Colors.black)),
                 ),
@@ -84,7 +83,16 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(width: 8),
                 TextButton(
                   key: const ValueKey('nav-sale'),
-                  onPressed: placeholderCallbackForButtons,
+                  onPressed: () {
+                    // Navigate directly to the Sale collection page (collection id 'c3')
+                    final saleCollection =
+                        sampleCollections.firstWhere((c) => c.id == 'c3');
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (ctx) =>
+                              CollectionPage(collection: saleCollection)),
+                    );
+                  },
                   child:
                       const Text('Sale', style: TextStyle(color: Colors.black)),
                 ),
@@ -179,7 +187,7 @@ class HomeScreen extends StatelessWidget {
                 title: const Text('Home'),
                 onTap: () {
                   Navigator.pop(context);
-                  placeholderCallbackForButtons();
+                  navigateToHome(context);
                 },
               ),
               ListTile(
@@ -187,7 +195,7 @@ class HomeScreen extends StatelessWidget {
                 title: const Text('Shop'),
                 onTap: () {
                   Navigator.pop(context);
-                  placeholderCallbackForButtons();
+                  navigateToProduct(context);
                 },
               ),
               ListTile(
@@ -195,7 +203,14 @@ class HomeScreen extends StatelessWidget {
                 title: const Text('Sale'),
                 onTap: () {
                   Navigator.pop(context);
-                  placeholderCallbackForButtons();
+                  // Open the Sale collection directly (collection id 'c3')
+                  final saleCollection =
+                      sampleCollections.firstWhere((c) => c.id == 'c3');
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (ctx) =>
+                            CollectionPage(collection: saleCollection)),
+                  );
                 },
               ),
               ListTile(
@@ -406,9 +421,12 @@ class HomeScreen extends StatelessWidget {
           // Footer
           SiteFooter(
             onAbout: () => Navigator.pushNamed(context, '/about'),
-            onHelp: placeholderCallbackForButtons,
-            onTerms: placeholderCallbackForButtons,
-            onContact: placeholderCallbackForButtons,
+            onHelp: () => ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Help page not implemented'))),
+            onTerms: () => ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Terms page not implemented'))),
+            onContact: () => ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Contact page not implemented'))),
           ),
           const SizedBox(height: 8),
           const Text('© University Union — All rights reserved',

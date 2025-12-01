@@ -174,7 +174,6 @@ class _CollectionsPageState extends State<CollectionsPage> {
                               return Container(color: Colors.grey[300]);
                             }
 
-                            // For coursework we use local assets; show a placeholder if missing
                             return Image.asset(
                               imgSrc,
                               fit: BoxFit.cover,
