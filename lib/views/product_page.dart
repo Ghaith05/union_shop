@@ -218,11 +218,15 @@ class _ProductPageState extends State<ProductPage> {
           ),
         ),
             const SizedBox(height: 8),
-            const SizedBox(
+            SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: null,
-                child: Padding(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Order placed — thank you!')),
+                  );
+                },
+                child: const Padding(
                   padding: EdgeInsets.symmetric(vertical: 12),
                   child: Text('Buy with shop', style: TextStyle(fontSize: 16)),
                 ),
