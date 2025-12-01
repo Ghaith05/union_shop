@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:union_shop/models/product.dart';
+import 'package:union_shop/data/cart.dart';
 
 class ProductPage extends StatefulWidget {
   final Product product;
@@ -198,16 +199,24 @@ class _ProductPageState extends State<ProductPage> {
             ),
             const SizedBox(height: 16),
             // Full-width Add to cart button (UI only)
-            const SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: null,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 12),
-                  child: Text('Add to cart', style: TextStyle(fontSize: 16)),
-                ),
-              ),
+           SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                final qty = _selectedQty ?? 1;
+                CartService().add(product, quantity: qty);
+                ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Added ${product.title} x$qty to cart')),
+              );
+              // Optionally, reset quantity selection to null if you prefer:
+              // setState(() => _selectedQty = null);
+            },
+            child: const Padding(
+            padding: EdgeInsets.symmetric(vertical: 12),
+              child: Text('Add to cart', style: TextStyle(fontSize: 16)),
             ),
+          ),
+        ),
             const SizedBox(height: 8),
             const SizedBox(
               width: double.infinity,
