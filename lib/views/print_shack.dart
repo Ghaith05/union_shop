@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:union_shop/models/product.dart';
 import 'package:union_shop/data/cart.dart';
@@ -94,7 +95,8 @@ class _PrintShackPageState extends State<PrintShackPage> {
                       value: 'One Line of Text',
                       child: Text('One Line of Text')),
                   DropdownMenuItem(
-                      value: 'Two Lines of Text', child: Text('Two Lines of Text')),
+                      value: 'Two Lines of Text',
+                      child: Text('Two Lines of Text')),
                 ],
                 onChanged: (val) {
                   if (val == null) return;
@@ -153,12 +155,22 @@ class _PrintShackPageState extends State<PrintShackPage> {
                   ),
                   onPressed: () {
                     // Build a Product representing this personalised print and add to cart
+                    final descriptionText = _linesSelected ==
+                            'Two Lines of Text'
+                        ? '${_textController.text}\n${_textController2.text}'
+                        : _textController.text;
+
+                    // Create a deterministic id for identical personalisations so
+                    // adding the same personalised print will merge in the cart.
+                    final idSource =
+                        'Print Personalisation|$descriptionText|$_linesSelected|${_imagePaths[_selectedImageIndex]}|print_shack';
+                    final productId =
+                        'print_${base64Url.encode(utf8.encode(idSource))}';
+
                     final product = Product(
-                      id: DateTime.now().millisecondsSinceEpoch.toString(),
+                      id: productId,
                       title: 'Print Personalisation',
-                      description: _linesSelected == 'Two Lines of Text'
-                          ? '${_textController.text}\n${_textController2.text}'
-                          : _textController.text,
+                      description: descriptionText,
                       price:
                           (_linesSelected == 'Two Lines of Text' ? 5.0 : 3.0),
                       images: [_imagePaths[_selectedImageIndex]],
