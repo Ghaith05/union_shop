@@ -38,7 +38,9 @@ class _ProductPageState extends State<ProductPage> {
     final images = <String>[];
     if (product.images.isNotEmpty) {
       images.addAll(product.images);
-      while (images.length < 4) images.add(images.first);
+      while (images.length < 4) {
+        images.add(images.first);
+      }
     }
 
     return Scaffold(
