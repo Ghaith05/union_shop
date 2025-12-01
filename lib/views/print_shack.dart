@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:union_shop/models/product.dart';
+import 'package:union_shop/data/cart.dart';
 
 class PrintShackPage extends StatefulWidget {
   static const routeName = '/print';
@@ -37,7 +39,8 @@ class _PrintShackPageState extends State<PrintShackPage> {
                 width: double.infinity,
                 height: isDesktop ? 360 : 220,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(color: Colors.grey[300], height: isDesktop ? 360 : 220),
+                errorBuilder: (_, __, ___) => Container(
+                    color: Colors.grey[300], height: isDesktop ? 360 : 220),
               ),
               const SizedBox(height: 12),
               Row(
@@ -50,12 +53,16 @@ class _PrintShackPageState extends State<PrintShackPage> {
                         width: 64,
                         height: 64,
                         decoration: BoxDecoration(
-                          border: Border.all(color: i == _selectedImageIndex ? Colors.blue : Colors.black),
+                          border: Border.all(
+                              color: i == _selectedImageIndex
+                                  ? Colors.blue
+                                  : Colors.black),
                         ),
                         child: Image.asset(
                           _imagePaths[i],
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(color: Colors.grey[300]),
+                          errorBuilder: (_, __, ___) =>
+                              Container(color: Colors.grey[300]),
                         ),
                       ),
                     ),
@@ -68,9 +75,12 @@ class _PrintShackPageState extends State<PrintShackPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 12),
-              Text('Personalisation', style: Theme.of(context).textTheme.titleLarge),
+              Text('Personalisation',
+                  style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: 8),
-              Text('£${_linesSelected == 'Two Lines of Text' ? 5 : 3}.00', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Text('£${_linesSelected == 'Two Lines of Text' ? 5 : 3}.00',
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 6),
               const Text('Tax included.', style: TextStyle(color: Colors.grey)),
               const SizedBox(height: 20),
@@ -80,8 +90,11 @@ class _PrintShackPageState extends State<PrintShackPage> {
                 key: const ValueKey('print-lines'),
                 value: _linesSelected,
                 items: const [
-                  DropdownMenuItem(value: 'One Line of Text', child: Text('One Line of Text')),
-                  DropdownMenuItem(value: 'Two Lines of Text', child: Text('Two Lines')),
+                  DropdownMenuItem(
+                      value: 'One Line of Text',
+                      child: Text('One Line of Text')),
+                  DropdownMenuItem(
+                      value: 'Two Lines of Text', child: Text('Two Lines of Text')),
                 ],
                 onChanged: (val) {
                   if (val == null) return;
@@ -93,12 +106,20 @@ class _PrintShackPageState extends State<PrintShackPage> {
               const SizedBox(height: 16),
               const Text('Personalisation Line 1:'),
               const SizedBox(height: 8),
-              TextField(key: const ValueKey('print-line1'), controller: _textController, decoration: const InputDecoration(border: OutlineInputBorder())),
+              TextField(
+                  key: const ValueKey('print-line1'),
+                  controller: _textController,
+                  decoration:
+                      const InputDecoration(border: OutlineInputBorder())),
               const SizedBox(height: 16),
               if (_linesSelected == 'Two Lines of Text') ...[
                 const Text('Personalisation Line 2:'),
                 const SizedBox(height: 8),
-                TextField(key: const ValueKey('print-line2'), controller: _textController2, decoration: const InputDecoration(border: OutlineInputBorder())),
+                TextField(
+                    key: const ValueKey('print-line2'),
+                    controller: _textController2,
+                    decoration:
+                        const InputDecoration(border: OutlineInputBorder())),
                 const SizedBox(height: 16),
               ],
               const SizedBox(height: 16),
@@ -109,7 +130,10 @@ class _PrintShackPageState extends State<PrintShackPage> {
                 child: DropdownButton<int>(
                   key: const ValueKey('print-qty'),
                   value: _qty,
-                  items: List<DropdownMenuItem<int>>.generate(10, (i) => DropdownMenuItem(value: i + 1, child: Text('${i + 1}'))),
+                  items: List<DropdownMenuItem<int>>.generate(
+                      10,
+                      (i) => DropdownMenuItem(
+                          value: i + 1, child: Text('${i + 1}'))),
                   onChanged: (val) {
                     if (val == null) return;
                     setState(() {
@@ -127,15 +151,37 @@ class _PrintShackPageState extends State<PrintShackPage> {
                     side: const BorderSide(color: Color(0xFF4d2963)),
                     foregroundColor: const Color(0xFF4d2963),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    // Build a Product representing this personalised print and add to cart
+                    final product = Product(
+                      id: DateTime.now().millisecondsSinceEpoch.toString(),
+                      title: 'Print Personalisation',
+                      description: _linesSelected == 'Two Lines of Text'
+                          ? '${_textController.text}\n${_textController2.text}'
+                          : _textController.text,
+                      price:
+                          (_linesSelected == 'Two Lines of Text' ? 5.0 : 3.0),
+                      images: [_imagePaths[_selectedImageIndex]],
+                      collectionId: 'print_shack',
+                    );
+
+                    CartService().add(product, quantity: _qty);
+
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(
+                          'Added $_qty x personalised print (${_linesSelected == 'Two Lines of Text' ? '2 lines' : '1 line'})'),
+                    ));
+                  },
                   child: const Padding(
                     padding: EdgeInsets.symmetric(vertical: 14.0),
-                    child: Text('ADD TO CART', style: TextStyle(letterSpacing: 1.5)),
+                    child: Text('ADD TO CART',
+                        style: TextStyle(letterSpacing: 1.5)),
                   ),
                 ),
               ),
               const SizedBox(height: 16),
-              const Text('£3 for one line of text! £5 for two!', style: TextStyle(color: Colors.grey)),
+              const Text('£3 for one line of text! £5 for two!',
+                  style: TextStyle(color: Colors.grey)),
             ],
           );
           return Padding(
@@ -146,16 +192,29 @@ class _PrintShackPageState extends State<PrintShackPage> {
                     children: [
                       Expanded(flex: 2, child: leftImage),
                       const SizedBox(width: 24),
-                      Expanded(flex: 3, child: SingleChildScrollView(child: rightForm)),
-                      ],
+                      Expanded(
+                          flex: 3,
+                          child: SingleChildScrollView(child: rightForm)),
+                    ],
                   )
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [leftImage, const SizedBox(height: 12), rightForm],
+                    children: [
+                      leftImage,
+                      const SizedBox(height: 12),
+                      rightForm
+                    ],
                   ),
           );
         }),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    _textController2.dispose();
+    super.dispose();
   }
 }
