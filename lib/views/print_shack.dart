@@ -209,13 +209,17 @@ class _PrintShackPageState extends State<PrintShackPage> {
                           child: SingleChildScrollView(child: rightForm)),
                     ],
                   )
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      leftImage,
-                      const SizedBox(height: 12),
-                      rightForm
-                    ],
+                : SingleChildScrollView(
+                    // Make the mobile layout scrollable so large forms or the
+                    // keyboard won't hide the Add to Cart button.
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        leftImage,
+                        const SizedBox(height: 12),
+                        rightForm
+                      ],
+                    ),
                   ),
           );
         }),
