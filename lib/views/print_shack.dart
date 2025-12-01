@@ -15,6 +15,11 @@ class _PrintShackPageState extends State<PrintShackPage> {
     'assets/images/print_shack/print_shack.png',
     'assets/images/print_shack/print_shack.png',
   ];
+  String _linesSelected = 'One Line of Text';
+  int _qty = 1;
+
+  final TextEditingController _textController = TextEditingController();
+  final TextEditingController _textController2 = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +70,7 @@ class _PrintShackPageState extends State<PrintShackPage> {
               const SizedBox(height: 12),
               Text('Personalisation', style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: 8),
-              const Text('£3.00', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Text('£${_linesSelected == 'Two Lines of Text' ? 5 : 3}.00', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 6),
               const Text('Tax included.', style: TextStyle(color: Colors.grey)),
               const SizedBox(height: 20),
@@ -73,21 +78,29 @@ class _PrintShackPageState extends State<PrintShackPage> {
               const SizedBox(height: 8),
               DropdownButton<String>(
                 key: const ValueKey('print-lines'),
-                value: 'One Line of Text',
+                value: _linesSelected,
                 items: const [
                   DropdownMenuItem(value: 'One Line of Text', child: Text('One Line of Text')),
                   DropdownMenuItem(value: 'Two Lines of Text', child: Text('Two Lines')),
                 ],
-                onChanged: (_) {},
+                onChanged: (val) {
+                  if (val == null) return;
+                  setState(() {
+                    _linesSelected = val;
+                  });
+                },
               ),
               const SizedBox(height: 16),
               const Text('Personalisation Line 1:'),
               const SizedBox(height: 8),
-              const TextField(key: ValueKey('print-line1'), decoration: InputDecoration(border: OutlineInputBorder())),
+              TextField(key: const ValueKey('print-line1'), controller: _textController, decoration: const InputDecoration(border: OutlineInputBorder())),
               const SizedBox(height: 16),
-              const Text('Personalisation Line 2:'),
-              const SizedBox(height: 8),
-              const TextField(key: ValueKey('print-line2'), decoration: InputDecoration(border: OutlineInputBorder())),
+              if (_linesSelected == 'Two Lines of Text') ...[
+                const Text('Personalisation Line 2:'),
+                const SizedBox(height: 8),
+                TextField(key: const ValueKey('print-line2'), controller: _textController2, decoration: const InputDecoration(border: OutlineInputBorder())),
+                const SizedBox(height: 16),
+              ],
               const SizedBox(height: 16),
               const Text('Quantity'),
               const SizedBox(height: 8),
@@ -95,9 +108,14 @@ class _PrintShackPageState extends State<PrintShackPage> {
                 width: 88,
                 child: DropdownButton<int>(
                   key: const ValueKey('print-qty'),
-                  value: 1,
+                  value: _qty,
                   items: List<DropdownMenuItem<int>>.generate(10, (i) => DropdownMenuItem(value: i + 1, child: Text('${i + 1}'))),
-                  onChanged: (_) {},
+                  onChanged: (val) {
+                    if (val == null) return;
+                    setState(() {
+                      _qty = val;
+                    });
+                  },
                 ),
               ),
               const SizedBox(height: 16),
@@ -120,8 +138,6 @@ class _PrintShackPageState extends State<PrintShackPage> {
               const Text('£3 for one line of text! £5 for two!', style: TextStyle(color: Colors.grey)),
             ],
           );
-
-          // Commit B: show left image + right form skeleton on desktop; stack on mobile
           return Padding(
             padding: const EdgeInsets.all(16.0),
             child: isDesktop
@@ -130,8 +146,8 @@ class _PrintShackPageState extends State<PrintShackPage> {
                     children: [
                       Expanded(flex: 2, child: leftImage),
                       const SizedBox(width: 24),
-                      Expanded(flex: 3, child: rightForm),
-                    ],
+                      Expanded(flex: 3, child: SingleChildScrollView(child: rightForm)),
+                      ],
                   )
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
