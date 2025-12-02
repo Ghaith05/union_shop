@@ -124,6 +124,18 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 1,
         titleSpacing: 0,
+        // Show a hamburger menu button on small screens so tests can
+        // reliably find ValueKey('nav-menu'). On desktop we show the
+        // full nav links and don't include a leading button.
+        leading: isDesktop(context)
+            ? null
+            : Builder(
+                builder: (ctx) => IconButton(
+                  key: const ValueKey('nav-menu'),
+                  icon: const Icon(Icons.menu, color: Colors.black),
+                  onPressed: () => Scaffold.of(ctx).openDrawer(),
+                ),
+              ),
         title: Row(
           children: [
             GestureDetector(
