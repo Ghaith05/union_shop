@@ -117,7 +117,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
+  // width is computed per-layout where needed via LayoutBuilder
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -393,14 +393,23 @@ class HomeScreen extends StatelessWidget {
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w600))),
                 const SizedBox(height: 12),
-                GridView.count(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: width > 600 ? 2 : 1,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 3 / 1.2,
-                  children: [
+                LayoutBuilder(builder: (ctx, constraints) {
+                  final w = constraints.maxWidth;
+                  final crossAxisCount = w >= 1400
+                      ? 4
+                      : w >= 1000
+                          ? 3
+                          : w >= 600
+                              ? 2
+                              : 1;
+                  return GridView.count(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisCount: crossAxisCount,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 3 / 1.2,
+                    children: [
                     // Featured products (ordered): hoodie, t-shirt, jogger, notebook
                     'p2', // Union Hoodie
                     'p1', // Union T-Shirt
@@ -489,7 +498,8 @@ class HomeScreen extends StatelessWidget {
                       ),
                     );
                   }).toList(),
-                ),
+                  );
+                }),
               ],
             ),
           ),

@@ -135,75 +135,85 @@ class _CollectionsPageState extends State<CollectionsPage> {
             ),
             const SizedBox(height: 12),
 
-            // Grid of collections
+            // Grid of collections (adaptive columns)
             Expanded(
-              child: GridView.builder(
-                itemCount: visible.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 1.6,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                ),
-                itemBuilder: (context, index) {
-                  final c = visible[index];
-                  return GestureDetector(
-                    key: ValueKey('collection-card-${c.id}'),
-                    onTap: () => _openCollection(context, c),
-                    child: Card(
-                      clipBehavior: Clip.antiAlias,
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          // c.image may be a String or a List<String> (first image), handle both.
-                          Builder(builder: (context) {
-                            String? imgSrc;
-                            if (c.image is String) {
-                              imgSrc = c.image as String;
-                            } else {
-                              final list = c.image as List;
-                              if (list.isNotEmpty) {
-                                imgSrc = list.first as String;
+              child: LayoutBuilder(builder: (ctx, constraints) {
+                final w = constraints.maxWidth;
+                final crossAxisCount = w >= 1400
+                    ? 4
+                    : w >= 1000
+                        ? 3
+                        : w >= 600
+                            ? 2
+                            : 1;
+                return GridView.builder(
+                  itemCount: visible.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: crossAxisCount,
+                    childAspectRatio: 1.6,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                  ),
+                  itemBuilder: (context, index) {
+                    final c = visible[index];
+                    return GestureDetector(
+                      key: ValueKey('collection-card-${c.id}'),
+                      onTap: () => _openCollection(context, c),
+                      child: Card(
+                        clipBehavior: Clip.antiAlias,
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            // c.image may be a String or a List<String> (first image), handle both.
+                            Builder(builder: (context) {
+                              String? imgSrc;
+                              if (c.image is String) {
+                                imgSrc = c.image as String;
+                              } else {
+                                final list = c.image as List;
+                                if (list.isNotEmpty) {
+                                  imgSrc = list.first as String;
+                                }
                               }
-                            }
 
-                            if (imgSrc == null) {
-                              return Container(color: Colors.grey[300]);
-                            }
+                              if (imgSrc == null) {
+                                return Container(color: Colors.grey[300]);
+                              }
 
-                            return Image.asset(
-                              imgSrc,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) =>
-                                  Container(color: Colors.grey[300]),
-                            );
-                          }),
-                          Container(
-                            alignment: Alignment.bottomLeft,
-                            padding: const EdgeInsets.all(8),
-                            decoration: const BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Colors.transparent,
-                                  Color.fromRGBO(0, 0, 0, 0.6)
-                                ],
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
+                              return Image.asset(
+                                imgSrc,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) =>
+                                    Container(color: Colors.grey[300]),
+                              );
+                            }),
+                            Container(
+                              alignment: Alignment.bottomLeft,
+                              padding: const EdgeInsets.all(8),
+                              decoration: const BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.transparent,
+                                    Color.fromRGBO(0, 0, 0, 0.6)
+                                  ],
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                ),
+                              ),
+                              child: Text(
+                                c.name,
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
                               ),
                             ),
-                            child: Text(
-                              c.name,
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
-              ),
+                    );
+                  },
+                );
+              }),
             ),
             const SizedBox(height: 12),
             // Pagination controls
