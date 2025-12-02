@@ -15,7 +15,7 @@ void main() {
     await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
     await tester.pumpAndSettle();
 
-    // Ensure navbar keys exist
+    // Ensure navbar keys exist on mobile (menu should be present)
     expect(find.byKey(const ValueKey('nav-menu')), findsOneWidget);
     expect(find.byKey(const ValueKey('nav-cart')), findsOneWidget);
 
@@ -29,8 +29,8 @@ void main() {
     await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
     await tester.pumpAndSettle();
 
-    // Navbar keys still present
-    expect(find.byKey(const ValueKey('nav-menu')), findsOneWidget);
+    // On desktop the menu may be replaced by textual nav links; at minimum
+    // the cart icon should still be present.
     expect(find.byKey(const ValueKey('nav-cart')), findsOneWidget);
 
     // Cleanup

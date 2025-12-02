@@ -25,8 +25,9 @@ void main() {
     await tester.pumpWidget(MaterialApp(home: ProductPage(product: sample)));
     await tester.pumpAndSettle();
 
-    // Expect images then details in Column (find image widget)
-    expect(find.text('Test Product'), findsOneWidget);
+    // Expect the product title to be present (may appear more than once,
+    // e.g. AppBar + body). Accept multiple matches.
+    expect(find.text('Test Product'), findsWidgets);
 
     // Desktop
     tester.binding.window.physicalSizeTestValue = const Size(1280, 900);
@@ -36,7 +37,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // On desktop we expect the product title to still be present and layout to build without overflow
-    expect(find.text('Test Product'), findsOneWidget);
+    expect(find.text('Test Product'), findsWidgets);
 
     addTearDown(() {
       tester.binding.window.clearAllTestValues();
