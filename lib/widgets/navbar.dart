@@ -399,11 +399,11 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(height: 12),
                 LayoutBuilder(builder: (ctx, constraints) {
                   final w = constraints.maxWidth;
-                  final crossAxisCount = w >= 1400
+                  final crossAxisCount = w >= kBreakpointWide
                       ? 4
-                      : w >= 1000
+                      : w >= kBreakpointLarge
                           ? 3
-                          : w >= 600
+                          : w >= kBreakpointMobile
                               ? 2
                               : 1;
                   return GridView.count(
