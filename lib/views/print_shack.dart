@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:union_shop/widgets/navbar.dart';
+import 'package:union_shop/ui/responsive.dart';
 import 'package:union_shop/models/product.dart';
 import 'package:union_shop/data/cart.dart';
 
@@ -33,7 +34,7 @@ class _PrintShackPageState extends State<PrintShackPage> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: LayoutBuilder(builder: (context, constraints) {
-          final isDesktop = constraints.maxWidth >= 720;
+          final isDesktop = constraints.maxWidth >= kBreakpointDesktop;
           Widget leftImage = Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

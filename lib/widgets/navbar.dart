@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:union_shop/views/product_page.dart';
 import 'package:union_shop/views/collection_page.dart';
 import 'package:union_shop/views/collections_page.dart';
+import 'package:union_shop/ui/responsive.dart';
 import 'package:union_shop/data/sample_data.dart';
 import 'package:union_shop/widgets/footer.dart';
 import 'package:union_shop/data/cart.dart';
@@ -140,8 +141,8 @@ class HomeScreen extends StatelessWidget {
             // Nav links area (desktop only)
             Expanded(
               child: LayoutBuilder(builder: (ctx, constraints) {
-                final isDesktop = MediaQuery.of(ctx).size.width >= 720;
-                if (!isDesktop) return const SizedBox.shrink();
+                final desktop = isDesktop(ctx);
+                if (!desktop) return const SizedBox.shrink();
                 return SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
@@ -163,9 +164,12 @@ class HomeScreen extends StatelessWidget {
                       PopupMenuButton<int>(
                         key: const ValueKey('nav-print'),
                         onSelected: (v) {
-                          if (v == 1)
+                          if (v == 1) {
                             Navigator.pushNamed(context, '/print-about');
-                          if (v == 2) Navigator.pushNamed(context, '/print');
+                          }
+                          if (v == 2) {
+                            Navigator.pushNamed(context, '/print');
+                          }
                         },
                         itemBuilder: (ctx) => const [
                           PopupMenuItem<int>(value: 1, child: Text('About')),

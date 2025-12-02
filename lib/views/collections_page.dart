@@ -3,6 +3,7 @@ import 'package:union_shop/widgets/navbar.dart';
 import 'package:union_shop/data/sample_data.dart';
 import 'package:union_shop/data/collection_service.dart';
 import 'package:union_shop/views/collection_page.dart';
+import 'package:union_shop/ui/responsive.dart';
 
 class CollectionsPage extends StatefulWidget {
   static const routeName = '/collections';
@@ -139,11 +140,11 @@ class _CollectionsPageState extends State<CollectionsPage> {
             Expanded(
               child: LayoutBuilder(builder: (ctx, constraints) {
                 final w = constraints.maxWidth;
-                final crossAxisCount = w >= 1400
+                final crossAxisCount = w >= kBreakpointWide
                     ? 4
-                    : w >= 1000
+                    : w >= kBreakpointLarge
                         ? 3
-                        : w >= 600
+                        : w >= kBreakpointMobile
                             ? 2
                             : 1;
                 return GridView.builder(
