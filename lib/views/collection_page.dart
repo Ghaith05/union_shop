@@ -4,6 +4,7 @@ import 'package:union_shop/data/sample_data.dart';
 import 'package:union_shop/models/product.dart';
 import 'package:union_shop/views/product_page.dart';
 import 'package:union_shop/data/product_service.dart';
+import 'package:union_shop/ui/responsive.dart';
 
 class CollectionPage extends StatefulWidget {
   static const routeName = '/collection';
@@ -139,7 +140,8 @@ class _CollectionPageState extends State<CollectionPage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: LayoutBuilder(builder: (context, constraints) {
-              final isWide = constraints.maxWidth > 800;
+              // Treat desktop breakpoints consistently: use kBreakpointDesktop
+              final isWide = constraints.maxWidth >= kBreakpointDesktop;
               return Wrap(
                 spacing: 12,
                 runSpacing: 8,
