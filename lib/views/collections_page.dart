@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:union_shop/widgets/navbar.dart';
 import 'package:union_shop/data/sample_data.dart';
 import 'package:union_shop/data/collection_service.dart';
 import 'package:union_shop/views/collection_page.dart';
@@ -60,16 +61,14 @@ class _CollectionsPageState extends State<CollectionsPage> {
     // If we're still loading, show a small progress indicator.
     if (_loading) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('Collections'),
-        ),
+        appBar: buildAppBar(context, titleWidget: const Text('Collections')),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     if (_error != null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Collections')),
+        appBar: buildAppBar(context, titleWidget: const Text('Collections')),
         body: Center(child: Text('Error loading collections: $_error')),
       );
     }
@@ -90,9 +89,7 @@ class _CollectionsPageState extends State<CollectionsPage> {
     final visible = collectionsToShow.skip(start).take(_pageSize).toList();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Collections'),
-      ),
+      appBar: buildAppBar(context, titleWidget: const Text('Collections')),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:union_shop/widgets/navbar.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
@@ -6,12 +7,7 @@ class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('About Us'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 1,
-      ),
+      appBar: buildAppBar(context, titleWidget: const Text('About Us')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: const [

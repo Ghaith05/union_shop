@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:union_shop/widgets/navbar.dart';
 
 class PrintShackAboutPage extends StatelessWidget {
   const PrintShackAboutPage({Key? key}) : super(key: key);
@@ -7,12 +8,8 @@ class PrintShackAboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('The Union Print Shack'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 1,
-      ),
+      appBar: buildAppBar(context,
+          titleWidget: const Text('About The Print Shack')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: const [

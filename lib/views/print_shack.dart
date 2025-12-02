@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:union_shop/widgets/navbar.dart';
 import 'package:union_shop/models/product.dart';
 import 'package:union_shop/data/cart.dart';
 
@@ -27,7 +28,8 @@ class _PrintShackPageState extends State<PrintShackPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Print Shack - Personalise')),
+      appBar: buildAppBar(context,
+          titleWidget: const Text('Print Shack - Personalise')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: LayoutBuilder(builder: (context, constraints) {

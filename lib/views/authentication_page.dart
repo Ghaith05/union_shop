@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:union_shop/widgets/navbar.dart';
 
 /// Authentication page scaffold with two tabs: Login and Signup.
 /// Both tabs show non-functional placeholder widgets (UI only).
@@ -10,19 +11,24 @@ class AuthenticationPage extends StatelessWidget {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Authenticate'),
-          bottom: const TabBar(
-            tabs: [
-              Tab(key: Key('tab_login'), text: 'Login'),
-              Tab(key: Key('tab_signup'), text: 'Signup'),
-            ],
-          ),
-        ),
-        body: const TabBarView(
+        appBar: buildAppBar(context, titleWidget: const Text('Authenticate')),
+        // The shared AppBar doesn't include the TabBar, so we add it below the AppBar
+        body: const Column(
           children: [
-            LoginForm(),
-            SignupForm(),
+            // TabBar occupies a fixed height; embed it at the top of the body
+            SizedBox(
+              height: 48,
+              child: TabBar(tabs: [
+                Tab(key: Key('tab_login'), text: 'Login'),
+                Tab(key: Key('tab_signup'), text: 'Signup'),
+              ]),
+            ),
+            Expanded(
+              child: TabBarView(children: [
+                LoginForm(),
+                SignupForm(),
+              ]),
+            ),
           ],
         ),
       ),

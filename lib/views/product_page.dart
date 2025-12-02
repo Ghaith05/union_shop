@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:union_shop/widgets/navbar.dart';
 import 'package:union_shop/models/product.dart';
 import 'package:union_shop/data/cart.dart';
 
@@ -45,7 +46,7 @@ class _ProductPageState extends State<ProductPage> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text(product.title)),
+      appBar: buildAppBar(context, titleWidget: Text(product.title)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -199,24 +200,25 @@ class _ProductPageState extends State<ProductPage> {
             ),
             const SizedBox(height: 16),
             // Full-width Add to cart button (UI only)
-           SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                final qty = _selectedQty ?? 1;
-                CartService().add(product, quantity: qty);
-                ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Added ${product.title} x$qty to cart')),
-              );
-              // Optionally, reset quantity selection to null if you prefer:
-              // setState(() => _selectedQty = null);
-            },
-            child: const Padding(
-            padding: EdgeInsets.symmetric(vertical: 12),
-              child: Text('Add to cart', style: TextStyle(fontSize: 16)),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  final qty = _selectedQty ?? 1;
+                  CartService().add(product, quantity: qty);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text('Added ${product.title} x$qty to cart')),
+                  );
+                  // Optionally, reset quantity selection to null if you prefer:
+                  // setState(() => _selectedQty = null);
+                },
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: Text('Add to cart', style: TextStyle(fontSize: 16)),
+                ),
+              ),
             ),
-          ),
-        ),
             const SizedBox(height: 8),
             SizedBox(
               width: double.infinity,

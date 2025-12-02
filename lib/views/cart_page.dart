@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:union_shop/widgets/navbar.dart';
 import 'package:union_shop/data/cart.dart';
 
 class CartPage extends StatelessWidget {
@@ -9,7 +10,7 @@ class CartPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final cart = CartService();
     return Scaffold(
-      appBar: AppBar(title: const Text('Your Cart')),
+      appBar: buildAppBar(context, titleWidget: const Text('Your Cart')),
       body: Padding(
         padding: const EdgeInsets.all(12),
         child: ValueListenableBuilder<List<CartItem>>(
@@ -29,7 +30,9 @@ class CartPage extends StatelessWidget {
                       return ListTile(
                         leading: ci.product.images.isNotEmpty
                             ? Image.asset(ci.product.images.first,
-                                width: 56, height: 56, fit: BoxFit.cover,
+                                width: 56,
+                                height: 56,
+                                fit: BoxFit.cover,
                                 errorBuilder: (_, __, ___) => const SizedBox())
                             : const SizedBox(width: 56, height: 56),
                         title: Text(ci.product.title),
@@ -50,7 +53,8 @@ class CartPage extends StatelessWidget {
                               tooltip: 'Increase',
                               icon: const Icon(Icons.add_circle_outline),
                               onPressed: () {
-                                cart.updateQuantity(ci.product.id, ci.quantity + 1);
+                                cart.updateQuantity(
+                                    ci.product.id, ci.quantity + 1);
                               },
                             ),
                             IconButton(
@@ -71,18 +75,21 @@ class CartPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Total: £${cart.total.toStringAsFixed(2)}',
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
                     ElevatedButton(
                       onPressed: () {
                         // "Place order" — no payment integration, just clear cart and confirm.
                         cart.clear();
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Order placed — thank you!')),
+                          const SnackBar(
+                              content: Text('Order placed — thank you!')),
                         );
                         // Optionally navigate to a confirmation page or pop
                       },
                       child: const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                         child: Text('Checkout'),
                       ),
                     ),

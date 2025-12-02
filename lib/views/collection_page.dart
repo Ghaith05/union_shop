@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:union_shop/widgets/navbar.dart';
 import 'package:union_shop/data/sample_data.dart';
 import 'package:union_shop/models/product.dart';
 import 'package:union_shop/views/product_page.dart';
@@ -83,13 +84,13 @@ class _CollectionPageState extends State<CollectionPage> {
   Widget build(BuildContext context) {
     if (_loading) {
       return Scaffold(
-        appBar: AppBar(title: Text(widget.collection.name)),
+        appBar: buildAppBar(context, titleWidget: Text(widget.collection.name)),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
     if (_error != null) {
       return Scaffold(
-        appBar: AppBar(title: Text(widget.collection.name)),
+        appBar: buildAppBar(context, titleWidget: Text(widget.collection.name)),
         body: Center(child: Text('Error loading products: $_error')),
       );
     }
@@ -131,7 +132,7 @@ class _CollectionPageState extends State<CollectionPage> {
     final visibleProducts = filtered.skip(start).take(pageSize).toList();
 
     return Scaffold(
-      appBar: AppBar(title: Text(widget.collection.name)),
+      appBar: buildAppBar(context, titleWidget: Text(widget.collection.name)),
       body: Column(
         children: [
           // --- collection top-bar (filter/sort) ---
