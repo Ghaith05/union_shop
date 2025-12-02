@@ -45,6 +45,9 @@ class _ProductPageState extends State<ProductPage> {
       }
     }
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final imageHeight = screenWidth >= 900 ? 420.0 : 260.0;
+
     return Scaffold(
       appBar: buildAppBar(context, titleWidget: Text(product.title)),
       body: SingleChildScrollView(
@@ -55,7 +58,7 @@ class _ProductPageState extends State<ProductPage> {
             // image carousel (page view) using local assets
             if (images.isNotEmpty)
               SizedBox(
-                height: 260,
+                height: imageHeight,
                 child: Column(
                   children: [
                     Expanded(
@@ -64,12 +67,16 @@ class _ProductPageState extends State<ProductPage> {
                         onPageChanged: (idx) =>
                             setState(() => _selectedImageIndex = idx),
                         itemCount: images.length,
-                        itemBuilder: (context, i) => Image.asset(
-                          images[i],
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          errorBuilder: (_, __, ___) =>
-                              Container(color: Colors.grey[300]),
+                        itemBuilder: (context, i) => Container(
+                          color: Colors.grey[200],
+                          alignment: Alignment.center,
+                          child: Image.asset(
+                            images[i],
+                            fit: BoxFit.contain,
+                            width: double.infinity,
+                            errorBuilder: (_, __, ___) =>
+                                Container(color: Colors.grey[300]),
+                          ),
                         ),
                       ),
                     ),

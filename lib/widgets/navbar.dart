@@ -117,7 +117,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-  // width is computed per-layout where needed via LayoutBuilder
+    // width is computed per-layout where needed via LayoutBuilder
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -410,94 +410,97 @@ class HomeScreen extends StatelessWidget {
                     mainAxisSpacing: 12,
                     childAspectRatio: 3 / 1.2,
                     children: [
-                    // Featured products (ordered): hoodie, t-shirt, jogger, notebook
-                    'p2', // Union Hoodie
-                    'p1', // Union T-Shirt
-                    'p5', // Union Joggers
-                    'p4', // A5 Notebook
-                  ].map((id) {
-                    final p = sampleProducts.firstWhere(((s) => s.id == id));
-                    return Card(
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        side: BorderSide(color: Colors.grey[200]!),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (ctx) => ProductPage(product: p),
-                            ),
-                          );
-                        },
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: p.images.isNotEmpty
-                                  ? Image.asset(
-                                      p.images.first,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (_, __, ___) => Container(
-                                        color: Colors.grey[300],
-                                        child: const Center(
-                                          child: Icon(Icons.image_not_supported,
-                                              color: Colors.grey),
-                                        ),
-                                      ),
-                                    )
-                                  : Container(color: Colors.grey[300]),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 8),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    p.title,
-                                    style: const TextStyle(
-                                        fontSize: 14, color: Colors.black),
-                                    maxLines: 2,
-                                  ),
-                                  const SizedBox(height: 4),
-                                  // Show sale price when applicable
-                                  p.onSale && p.salePrice != null
-                                      ? Row(
-                                          children: [
-                                            Text(
-                                              '£${p.price.toStringAsFixed(2)}',
-                                              style: const TextStyle(
-                                                decoration:
-                                                    TextDecoration.lineThrough,
-                                                color: Colors.grey,
-                                                fontSize: 13,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 8),
-                                            Text(
-                                              '£${p.salePrice!.toStringAsFixed(2)}',
-                                              style: const TextStyle(
-                                                  fontSize: 13,
-                                                  color: Colors.redAccent,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ],
-                                        )
-                                      : Text(
-                                          '£${p.price.toStringAsFixed(2)}',
-                                          style: const TextStyle(
-                                              fontSize: 13, color: Colors.grey),
-                                        ),
-                                ],
-                              ),
-                            ),
-                          ],
+                      // Featured products (ordered): hoodie, t-shirt, jogger, notebook
+                      'p2', // Union Hoodie
+                      'p1', // Union T-Shirt
+                      'p5', // Union Joggers
+                      'p4', // A5 Notebook
+                    ].map((id) {
+                      final p = sampleProducts.firstWhere(((s) => s.id == id));
+                      return Card(
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(color: Colors.grey[200]!),
+                          borderRadius: BorderRadius.circular(6),
                         ),
-                      ),
-                    );
-                  }).toList(),
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (ctx) => ProductPage(product: p),
+                              ),
+                            );
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: p.images.isNotEmpty
+                                    ? Image.asset(
+                                        p.images.first,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (_, __, ___) => Container(
+                                          color: Colors.grey[300],
+                                          child: const Center(
+                                            child: Icon(
+                                                Icons.image_not_supported,
+                                                color: Colors.grey),
+                                          ),
+                                        ),
+                                      )
+                                    : Container(color: Colors.grey[300]),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 8),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      p.title,
+                                      style: const TextStyle(
+                                          fontSize: 14, color: Colors.black),
+                                      maxLines: 2,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    // Show sale price when applicable
+                                    p.onSale && p.salePrice != null
+                                        ? Row(
+                                            children: [
+                                              Text(
+                                                '£${p.price.toStringAsFixed(2)}',
+                                                style: const TextStyle(
+                                                  decoration: TextDecoration
+                                                      .lineThrough,
+                                                  color: Colors.grey,
+                                                  fontSize: 13,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Text(
+                                                '£${p.salePrice!.toStringAsFixed(2)}',
+                                                style: const TextStyle(
+                                                    fontSize: 13,
+                                                    color: Colors.redAccent,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ],
+                                          )
+                                        : Text(
+                                            '£${p.price.toStringAsFixed(2)}',
+                                            style: const TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.grey),
+                                          ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
                   );
                 }),
               ],
