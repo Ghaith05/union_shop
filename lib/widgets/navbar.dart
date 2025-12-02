@@ -6,6 +6,103 @@ import 'package:union_shop/data/sample_data.dart';
 import 'package:union_shop/widgets/footer.dart';
 import 'package:union_shop/data/cart.dart';
 
+// Shared AppBar builder used across pages so the left-side dropdown menu,
+// auth and cart icons are consistent.
+PreferredSizeWidget buildAppBar(BuildContext context, {Widget? titleWidget}) {
+  return AppBar(
+    backgroundColor: Colors.white,
+    foregroundColor: Colors.black,
+    elevation: 1,
+    automaticallyImplyLeading: false,
+    title: titleWidget ?? const SizedBox.shrink(),
+    // No leading menu here; we want the popup menu on the far right inside actions.
+    actions: [
+      IconButton(
+        key: const ValueKey('nav-auth'),
+        icon: const Icon(Icons.person_outline, color: Colors.black),
+        tooltip: 'Account',
+        onPressed: () => Navigator.pushNamed(context, '/auth'),
+      ),
+      ValueListenableBuilder<List<CartItem>>(
+        valueListenable: CartService().items,
+        builder: (context, items, _) {
+          final count = items.fold<int>(0, (sum, it) => sum + it.quantity);
+          return Stack(
+            clipBehavior: Clip.none,
+            children: [
+              IconButton(
+                key: const ValueKey('nav-cart'),
+                icon: const Icon(Icons.shopping_bag_outlined,
+                    color: Colors.black),
+                tooltip: 'Cart',
+                onPressed: () => Navigator.pushNamed(context, '/cart'),
+              ),
+              if (count > 0)
+                Positioned(
+                  right: 4,
+                  top: 6,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: const BoxDecoration(
+                      color: Colors.redAccent,
+                      shape: BoxShape.circle,
+                    ),
+                    constraints:
+                        const BoxConstraints(minWidth: 18, minHeight: 18),
+                    child: Text('$count',
+                        textAlign: TextAlign.center,
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 11)),
+                  ),
+                ),
+            ],
+          );
+        },
+      ),
+      // Main menu button as the right-most action (far right)
+      PopupMenuButton<int>(
+        key: const ValueKey('nav-menu'),
+        onSelected: (v) {
+          switch (v) {
+            case 1:
+              Navigator.pushNamedAndRemoveUntil(context, '/', (r) => false);
+              break;
+            case 2:
+              Navigator.pushNamed(context, CollectionsPage.routeName);
+              break;
+            case 3:
+              final saleCollection =
+                  sampleCollections.firstWhere((c) => c.id == 'c3');
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (ctx) =>
+                      CollectionPage(collection: saleCollection)));
+              break;
+            case 4:
+              Navigator.pushNamed(context, '/about');
+              break;
+            case 5:
+              Navigator.pushNamed(context, '/print-about');
+              break;
+            case 6:
+              Navigator.pushNamed(context, '/print');
+              break;
+          }
+        },
+        itemBuilder: (ctx) => const [
+          PopupMenuItem<int>(value: 1, child: Text('Home')),
+          PopupMenuItem<int>(value: 2, child: Text('Shop')),
+          PopupMenuItem<int>(value: 3, child: Text('Sale')),
+          PopupMenuItem<int>(value: 4, child: Text('About')),
+          PopupMenuItem<int>(value: 5, child: Text('Print Shack — About')),
+          PopupMenuItem<int>(
+              value: 6, child: Text('Print Shack — Personalisation')),
+        ],
+        icon: const Icon(Icons.menu, color: Colors.black),
+      ),
+    ],
+  );
+}
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -26,156 +123,135 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 1,
         titleSpacing: 0,
-        title: Builder(builder: (context) {
-          final width = MediaQuery.of(context).size.width;
-          final isDesktop = width >= 720; // adjust breakpoint as needed
-          return Row(
-            children: [
-              GestureDetector(
-                onTap: () => navigateToHome(context),
-                child: Image.network(
-                  'https://shop.upsu.net/cdn/shop/files/upsu_300x300.png?v=1614735854',
+        title: Row(
+          children: [
+            GestureDetector(
+              onTap: () => navigateToHome(context),
+              child: Image.network(
+                'https://shop.upsu.net/cdn/shop/files/upsu_300x300.png?v=1614735854',
+                height: 28,
+                errorBuilder: (c, e, s) => const SizedBox(
                   height: 28,
-                  errorBuilder: (c, e, s) => const SizedBox(
-                    height: 28,
-                    child: Icon(Icons.image_not_supported, color: Colors.grey),
-                  ),
+                  child: Icon(Icons.image_not_supported, color: Colors.grey),
                 ),
               ),
-              const SizedBox(width: 12),
-              if (isDesktop) ...[
-                TextButton(
-                  key: const ValueKey('nav-home'),
-                  onPressed: () => navigateToHome(context),
-                  child:
-                      const Text('Home', style: TextStyle(color: Colors.black)),
-                ),
-                const SizedBox(width: 8),
-                TextButton(
-                  key: const ValueKey('nav-collections'),
-                  onPressed: () => navigateToProduct(context),
-                  child:
-                      const Text('Shop', style: TextStyle(color: Colors.black)),
-                ),
-                const SizedBox(width: 8),
-                // Print Shack dropdown (desktop)
-                PopupMenuButton<int>(
-                  key: const ValueKey('nav-print'),
-                  onSelected: (v) {
-                    if (v == 1) Navigator.pushNamed(context, '/print-about');
-                    if (v == 2) Navigator.pushNamed(context, '/print');
-                  },
-                  itemBuilder: (ctx) => const [
-                    PopupMenuItem<int>(value: 1, child: Text('About')),
-                    PopupMenuItem<int>(
-                        value: 2, child: Text('Personalisation')),
-                  ],
-                  child: const Row(
+            ),
+            const SizedBox(width: 12),
+            // Nav links area (desktop only)
+            Expanded(
+              child: LayoutBuilder(builder: (ctx, constraints) {
+                final isDesktop = MediaQuery.of(ctx).size.width >= 720;
+                if (!isDesktop) return const SizedBox.shrink();
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
                     children: [
-                      Text(
-                        'The Print Shack',
-                        style: TextStyle(color: Colors.black, fontSize: 14),
+                      TextButton(
+                        key: const ValueKey('nav-home'),
+                        onPressed: () => navigateToHome(context),
+                        child: const Text('Home',
+                            style: TextStyle(color: Colors.black)),
                       ),
-                      Icon(Icons.arrow_drop_down, color: Colors.black),
+                      const SizedBox(width: 8),
+                      TextButton(
+                        key: const ValueKey('nav-collections'),
+                        onPressed: () => navigateToProduct(context),
+                        child: const Text('Shop',
+                            style: TextStyle(color: Colors.black)),
+                      ),
+                      const SizedBox(width: 8),
+                      PopupMenuButton<int>(
+                        key: const ValueKey('nav-print'),
+                        onSelected: (v) {
+                          if (v == 1)
+                            Navigator.pushNamed(context, '/print-about');
+                          if (v == 2) Navigator.pushNamed(context, '/print');
+                        },
+                        itemBuilder: (ctx) => const [
+                          PopupMenuItem<int>(value: 1, child: Text('About')),
+                          PopupMenuItem<int>(
+                              value: 2, child: Text('Personalisation')),
+                        ],
+                        child: const Row(
+                          children: [
+                            Text('The Print Shack',
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 14)),
+                            Icon(Icons.arrow_drop_down, color: Colors.black),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      TextButton(
+                        key: const ValueKey('nav-sale'),
+                        onPressed: () {
+                          final saleCollection =
+                              sampleCollections.firstWhere((c) => c.id == 'c3');
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (ctx) =>
+                                  CollectionPage(collection: saleCollection)));
+                        },
+                        child: const Text('Sale',
+                            style: TextStyle(color: Colors.black)),
+                      ),
+                      const SizedBox(width: 8),
+                      TextButton(
+                        key: const ValueKey('nav-about'),
+                        onPressed: () => Navigator.pushNamed(context, '/about'),
+                        child: const Text('About Us',
+                            style: TextStyle(color: Colors.black)),
+                      ),
                     ],
                   ),
-                ),
-                const SizedBox(width: 8),
-                TextButton(
-                  key: const ValueKey('nav-sale'),
-                  onPressed: () {
-                    // Navigate directly to the Sale collection page (collection id 'c3')
-                    final saleCollection =
-                        sampleCollections.firstWhere((c) => c.id == 'c3');
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (ctx) =>
-                              CollectionPage(collection: saleCollection)),
-                    );
-                  },
-                  child:
-                      const Text('Sale', style: TextStyle(color: Colors.black)),
-                ),
-                const SizedBox(width: 8),
-                TextButton(
-                  key: const ValueKey('nav-about'),
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/about');
-                  },
-                  child: const Text('About Us',
-                      style: TextStyle(color: Colors.black)),
-                ),
-                const Spacer(),
-                // Account icon (navigates to authentication)
-                IconButton(
-                  key: const ValueKey('nav-auth'),
-                  icon: const Icon(Icons.person_outline, color: Colors.black),
-                  tooltip: 'Account',
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/auth');
-                  },
-                ),
-                // Cart icon with badge (uses CartService ValueNotifier)
-                ValueListenableBuilder<List<CartItem>>(
-                  valueListenable: CartService().items,
-                  builder: (context, items, _) {
-                    final count =
-                        items.fold<int>(0, (sum, it) => sum + it.quantity);
-                    return Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        IconButton(
-                          key: const ValueKey('nav-cart'),
-                          icon: const Icon(Icons.shopping_bag_outlined,
-                              color: Colors.black),
-                          tooltip: 'Cart',
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/cart');
-                          },
-                        ),
-                        if (count > 0)
-                          Positioned(
-                            right: 4,
-                            top: 6,
-                            child: Container(
-                              padding: const EdgeInsets.all(2),
-                              decoration: const BoxDecoration(
-                                color: Colors.redAccent,
-                                shape: BoxShape.circle,
-                              ),
-                              constraints: const BoxConstraints(
-                                  minWidth: 18, minHeight: 18),
-                              child: Text(
-                                '$count',
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                    color: Colors.white, fontSize: 11),
-                              ),
-                            ),
+                );
+              }),
+            ),
+            // Account and cart icons
+            IconButton(
+              key: const ValueKey('nav-auth'),
+              icon: const Icon(Icons.person_outline, color: Colors.black),
+              tooltip: 'Account',
+              onPressed: () => Navigator.pushNamed(context, '/auth'),
+            ),
+            ValueListenableBuilder<List<CartItem>>(
+              valueListenable: CartService().items,
+              builder: (context, items, _) {
+                final count =
+                    items.fold<int>(0, (sum, it) => sum + it.quantity);
+                return Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    IconButton(
+                      key: const ValueKey('nav-cart'),
+                      icon: const Icon(Icons.shopping_bag_outlined,
+                          color: Colors.black),
+                      tooltip: 'Cart',
+                      onPressed: () => Navigator.pushNamed(context, '/cart'),
+                    ),
+                    if (count > 0)
+                      Positioned(
+                        right: 4,
+                        top: 6,
+                        child: Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: const BoxDecoration(
+                            color: Colors.redAccent,
+                            shape: BoxShape.circle,
                           ),
-                      ],
-                    );
-                  },
-                ),
-              ] else ...[
-                const Spacer(),
-                PopupMenuButton<int>(
-                  key: const ValueKey('nav-print'),
-                  icon: const Icon(Icons.menu, color: Colors.grey, size: 20),
-                  onSelected: (v) {
-                    if (v == 1) Navigator.pushNamed(context, '/print-about');
-                    if (v == 2) Navigator.pushNamed(context, '/print');
-                  },
-                  itemBuilder: (ctx) => const [
-                    PopupMenuItem<int>(value: 1, child: Text('About')),
-                    PopupMenuItem<int>(
-                        value: 2, child: Text('Personalisation')),
+                          constraints:
+                              const BoxConstraints(minWidth: 18, minHeight: 18),
+                          child: Text('$count',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 11)),
+                        ),
+                      ),
                   ],
-                ),
-              ]
-            ],
-          );
-        }),
+                );
+              },
+            ),
+          ],
+        ),
       ),
       drawer: Drawer(
         child: SafeArea(
@@ -331,7 +407,7 @@ class HomeScreen extends StatelessWidget {
                     'p5', // Union Joggers
                     'p4', // A5 Notebook
                   ].map((id) {
-                    final p = sampleProducts.firstWhere((s) => s.id == id);
+                    final p = sampleProducts.firstWhere(((s) => s.id == id));
                     return Card(
                       elevation: 0,
                       shape: RoundedRectangleBorder(
