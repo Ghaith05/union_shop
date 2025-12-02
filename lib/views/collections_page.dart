@@ -91,13 +91,14 @@ class _CollectionsPageState extends State<CollectionsPage> {
 
     return Scaffold(
       appBar: buildAppBar(context, titleWidget: const Text('Collections')),
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          children: [
-            // Filter + Sort controls (UI-only)
-            Row(
-              children: [
+      body: LayoutBuilder(builder: (ctx, constraints) {
+        final content = Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            children: [
+              // Filter + Sort controls (UI-only)
+              Row(
+                children: [
                 // Filter / search box
                 Expanded(
                   child: TextField(
@@ -257,7 +258,17 @@ class _CollectionsPageState extends State<CollectionsPage> {
             ),
           ],
         ),
-      ),
+      );
+      if (constraints.maxWidth >= kBreakpointDesktop) {
+          return Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1200),
+              child: content,
+            ),
+          );
+        }
+        return content; 
+      }),
     );
   }
 }
