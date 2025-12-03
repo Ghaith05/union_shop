@@ -1,108 +1,179 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:union_shop/widgets/navbar.dart';
+import 'package:union_shop/data/auth_service.dart';
 
-/// Authentication page scaffold with two tabs: Login and Signup.
-/// Both tabs show non-functional placeholder widgets (UI only).
-class AuthenticationPage extends StatelessWidget {
+class AuthenticationPage extends StatefulWidget {
   const AuthenticationPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: buildAppBar(context, titleWidget: const Text('Authenticate')),
-        // The shared AppBar doesn't include the TabBar, so we add it below the AppBar
-        body: const Column(
-          children: [
-            // TabBar occupies a fixed height; embed it at the top of the body
-            SizedBox(
-              height: 48,
-              child: TabBar(tabs: [
-                Tab(key: Key('tab_login'), text: 'Login'),
-                Tab(key: Key('tab_signup'), text: 'Signup'),
-              ]),
-            ),
-            Expanded(
-              child: TabBarView(children: [
-                LoginForm(),
-                SignupForm(),
-              ]),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  State<AuthenticationPage> createState() => _AuthenticationPageState();
 }
 
-class LoginForm extends StatelessWidget {
-  const LoginForm({Key? key}) : super(key: key);
+class _AuthenticationPageState extends State<AuthenticationPage> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _loading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  bool get _valid =>
+      _emailController.text.contains('@') &&
+      _passwordController.text.length >= 6;
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          TextField(
-            key: Key('login_email'),
-            decoration: InputDecoration(labelText: 'Email'),
-            keyboardType: TextInputType.emailAddress,
+    return Scaffold(
+      appBar: buildAppBar(context, titleWidget: const SizedBox.shrink()),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 520),
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Branded header (logo/title + subtitle) to match the provided design
+                    Center(
+                      child: Column(
+                        children: [
+                          Text(
+                            'The UNION',
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF4d2963),
+                                ),
+                          ),
+                          const SizedBox(height: 8),
+                          const Text('Sign in',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 6),
+                          const Text('Choose how you\'d like to sign in',
+                              style: TextStyle(color: Colors.black54)),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.g_mobiledata),
+                      label: const Text('Sign in with Google'),
+                      onPressed: _loading
+                          ? null
+                          : () async {
+                              setState(() => _loading = true);
+                              try {
+                                await AuthenticationService()
+                                    .signInWithGoogle();
+                                if (!mounted) return;
+                                Navigator.pushNamedAndRemoveUntil(
+                                    context, '/account', (r) => false);
+                              } catch (_) {}
+                              if (mounted) setState(() => _loading = false);
+                            },
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _emailController,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(), hintText: 'Email'),
+                      keyboardType: TextInputType.emailAddress,
+                      onChanged: (_) => setState(() {}),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _passwordController,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(), hintText: 'Password'),
+                      obscureText: true,
+                      onChanged: (_) => setState(() {}),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: (!_valid || _loading)
+                                ? null
+                                : () async {
+                                    setState(() => _loading = true);
+                                    try {
+                                      await AuthenticationService()
+                                          .signInWithEmail(
+                                              _emailController.text,
+                                              _passwordController.text);
+                                      if (!mounted) return;
+                                      Navigator.pushNamedAndRemoveUntil(
+                                          context, '/account', (r) => false);
+                                    } catch (e) {
+                                      if (!mounted) return;
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                              content: Text(
+                                                  'Sign in failed: ${e.toString()}')));
+                                    } finally {
+                                      if (mounted)
+                                        setState(() => _loading = false);
+                                    }
+                                  },
+                            child: _loading
+                                ? const SizedBox(
+                                    height: 18,
+                                    width: 18,
+                                    child: CircularProgressIndicator(
+                                        strokeWidth: 2))
+                                : const Text('Sign in'),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: (!_valid || _loading)
+                                ? null
+                                : () async {
+                                    setState(() => _loading = true);
+                                    try {
+                                      await AuthenticationService()
+                                          .signUpWithEmail(
+                                              _emailController.text,
+                                              _passwordController.text);
+                                      if (!mounted) return;
+                                      Navigator.pushNamedAndRemoveUntil(
+                                          context, '/account', (r) => false);
+                                    } catch (e) {
+                                      if (!mounted) return;
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                              content: Text(
+                                                  'Sign up failed: ${e.toString()}')));
+                                    } finally {
+                                      if (mounted)
+                                        setState(() => _loading = false);
+                                    }
+                                  },
+                            child: const Text('Sign up'),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ),
           ),
-          SizedBox(height: 12),
-          TextField(
-            key: Key('login_password'),
-            decoration: InputDecoration(labelText: 'Password'),
-            obscureText: true,
-          ),
-          SizedBox(height: 20),
-          ElevatedButton(
-            key: Key('login_button'),
-            onPressed: null,
-            child: Text('Log in'),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class SignupForm extends StatelessWidget {
-  const SignupForm({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.all(16.0),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TextField(
-              key: Key('signup_name'),
-              decoration: InputDecoration(labelText: 'Full name'),
-            ),
-            SizedBox(height: 12),
-            TextField(
-              key: Key('signup_email'),
-              decoration: InputDecoration(labelText: 'Email'),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            SizedBox(height: 12),
-            TextField(
-              key: Key('signup_password'),
-              decoration: InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              key: Key('signup_button'),
-              onPressed: null,
-              child: Text('Create account'),
-            ),
-          ],
         ),
       ),
     );
