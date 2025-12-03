@@ -34,15 +34,18 @@ class DefaultFirebaseOptions {
   }
 
   // Web configuration
+
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'YOUR_WEB_API_KEY',
-    appId: 'YOUR_WEB_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    authDomain: 'your-project.firebaseapp.com',
-    storageBucket: 'your-project.appspot.com',
-    measurementId: 'G-XXXXXXXXXX',
+    apiKey: 'AIzaSyCza0AxQDMU1Pcagl1ky8Oy6i2miShuTJY',
+    appId: '1:148947852488:web:f22aa92589f97e259a19fd',
+    messagingSenderId: '148947852488',
+    projectId: 'union-shop-a986b',
+    authDomain: 'union-shop-a986b.firebaseapp.com',
+    storageBucket: 'union-shop-a986b.firebasestorage.app',
+    measurementId: 'G-YMJF4ZHBDB',
   );
+
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 
   // Android configuration
   static const FirebaseOptions android = FirebaseOptions(

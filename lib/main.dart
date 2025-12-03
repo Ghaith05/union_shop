@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:union_shop/data/auth_service.dart';
-import 'firebase_options.dart';
+import 'package:union_shop/firebase_options.dart';
 import 'package:union_shop/views/about_page.dart';
 import 'package:union_shop/views/print_shack_about.dart';
 import 'package:union_shop/views/collections_page.dart';
