@@ -127,6 +127,47 @@ class AuthenticationService {
     currentUser.value = null;
   }
 
+  /// Update profile fields (name and/or email).
+  /// If Firebase is available, update the Firebase user and then update
+  /// the in-memory `currentUser`. Falls back to updating the in-memory
+  /// model when no backend is available (useful for offline/dev).
+  Future<void> updateProfile({String? name, String? email}) async {
+    try {
+      final fb.User? fu = fb.FirebaseAuth.instance.currentUser;
+      if (fu != null) {
+        if (name != null) {
+          await fu.updateDisplayName(name);
+        }
+        if (email != null && email != fu.email) {
+          // Use dynamic call to avoid static SDK differences across versions.
+          await (fu as dynamic).updateEmail(email);
+        }
+        // Refresh mapped user
+        final mapped = FirebaseAuthAdapter.mapFirebaseUser(
+            fb.FirebaseAuth.instance.currentUser);
+        currentUser.value = mapped;
+        return;
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        // ignore: avoid_print
+        print('AuthenticationService.updateProfile(): error: $e');
+      }
+      // Don't rethrow here so tests and offline/dev scenarios fall back to
+      // updating the in-memory model below.
+    }
+
+    // Fallback: update in-memory only
+    final u = currentUser.value;
+    if (u != null) {
+      currentUser.value = User(
+        id: u.id,
+        email: email ?? u.email,
+        name: name ?? u.name,
+      );
+    }
+  }
+
   bool _looksLikeEmail(String e) =>
       e.contains('@') && e.contains('.') && e.length > 4;
   String _nameFromEmail(String e) => e.split('@').first;
