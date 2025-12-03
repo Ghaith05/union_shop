@@ -6,6 +6,9 @@ import 'package:union_shop/ui/responsive.dart';
 import 'package:union_shop/data/sample_data.dart';
 import 'package:union_shop/widgets/footer.dart';
 import 'package:union_shop/data/cart.dart';
+import 'package:union_shop/data/auth_service.dart';
+import 'package:union_shop/data/user.dart';
+import 'package:union_shop/views/account_dashboard.dart';
 
 // Shared AppBar builder used across pages so the left-side dropdown menu,
 // auth and cart icons are consistent.
@@ -18,11 +21,17 @@ PreferredSizeWidget buildAppBar(BuildContext context, {Widget? titleWidget}) {
     title: titleWidget ?? const SizedBox.shrink(),
     // No leading menu here; we want the popup menu on the far right inside actions.
     actions: [
-      IconButton(
-        key: const ValueKey('nav-auth'),
-        icon: const Icon(Icons.person_outline, color: Colors.black),
-        tooltip: 'Account',
-        onPressed: () => Navigator.pushNamed(context, '/auth'),
+      ValueListenableBuilder<User?>(
+        valueListenable: AuthenticationService().currentUser,
+        builder: (ctx, user, __) {
+          return IconButton(
+            key: const ValueKey('nav-auth'),
+            icon: const Icon(Icons.person_outline, color: Colors.black),
+            tooltip: 'Account',
+            onPressed: () => Navigator.pushNamed(
+                ctx, user == null ? '/auth' : AccountDashboard.routeName),
+          );
+        },
       ),
       ValueListenableBuilder<List<CartItem>>(
         valueListenable: CartService().items,
@@ -223,11 +232,17 @@ class HomeScreen extends StatelessWidget {
               }),
             ),
             // Account and cart icons
-            IconButton(
-              key: const ValueKey('nav-auth'),
-              icon: const Icon(Icons.person_outline, color: Colors.black),
-              tooltip: 'Account',
-              onPressed: () => Navigator.pushNamed(context, '/auth'),
+            ValueListenableBuilder<User?>(
+              valueListenable: AuthenticationService().currentUser,
+              builder: (ctx, user, __) {
+                return IconButton(
+                  key: const ValueKey('nav-auth'),
+                  icon: const Icon(Icons.person_outline, color: Colors.black),
+                  tooltip: 'Account',
+                  onPressed: () => Navigator.pushNamed(
+                      ctx, user == null ? '/auth' : AccountDashboard.routeName),
+                );
+              },
             ),
             ValueListenableBuilder<List<CartItem>>(
               valueListenable: CartService().items,
