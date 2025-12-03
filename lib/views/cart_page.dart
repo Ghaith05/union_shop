@@ -127,8 +127,38 @@ class CartPage extends StatelessWidget {
                                           GestureDetector(
                                             key: ValueKey(
                                                 'cart-remove-text-${ci.product.id}'),
-                                            onTap: () => cart
-                                                .removeProduct(ci.product.id),
+                                            onTap: () async {
+                                              final confirmed =
+                                                  await showDialog<bool>(
+                                                context: ctx,
+                                                builder: (dctx) => AlertDialog(
+                                                  title:
+                                                      const Text('Remove item'),
+                                                  content: Text(
+                                                      'Remove "${ci.product.title}" from your cart?'),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () =>
+                                                          Navigator.of(dctx)
+                                                              .pop(false),
+                                                      child:
+                                                          const Text('Cancel'),
+                                                    ),
+                                                    ElevatedButton(
+                                                      onPressed: () =>
+                                                          Navigator.of(dctx)
+                                                              .pop(true),
+                                                      child:
+                                                          const Text('Remove'),
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                              if (confirmed == true) {
+                                                cart.removeProduct(
+                                                    ci.product.id);
+                                              }
+                                            },
                                             child: const Text('Remove',
                                                 style: TextStyle(
                                                     color: Color(0xFF4d2963),
