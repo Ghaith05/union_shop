@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:union_shop/data/auth_service.dart';
-import 'package:union_shop/data/user.dart';
 
 void main() {
   group('AuthenticationService email flows (fallback)', () {
