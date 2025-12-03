@@ -74,8 +74,9 @@ class AccountDashboardBody extends StatelessWidget {
                                     await AuthenticationService().updateProfile(
                                         name: nameCtl.text.trim(),
                                         email: emailCtl.text.trim());
-                                    if (ctx.mounted)
+                                    if (ctx.mounted) {
                                       Navigator.of(ctx).pop(true);
+                                    }
                                   } catch (e) {
                                     if (ctx.mounted) {
                                       ScaffoldMessenger.of(context)

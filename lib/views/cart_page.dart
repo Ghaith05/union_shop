@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:union_shop/widgets/navbar.dart';
 import 'package:union_shop/data/cart.dart';
-import 'package:union_shop/data/auth_service.dart';
-import 'package:union_shop/data/user.dart';
+import 'package:union_shop/views/account_dashboard.dart';
 
 class CartPage extends StatelessWidget {
   static const routeName = '/cart';
@@ -23,41 +22,14 @@ class CartPage extends StatelessWidget {
             // Log out button; if not signed in it shows a Sign in button.
             return Column(
               children: [
-                ValueListenableBuilder<User?>(
-                  valueListenable: AuthenticationService().currentUser,
-                  builder: (ctx, user, __) {
-                    return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: user == null
-                                  ? const Text('Not signed in')
-                                  : Text('Signed in as ${user.email}'),
-                            ),
-                            if (user == null)
-                              ElevatedButton(
-                                onPressed: () =>
-                                    Navigator.pushNamed(ctx, '/auth'),
-                                child: const Text('Sign in'),
-                              )
-                            else
-                              ElevatedButton(
-                                onPressed: () async {
-                                  await AuthenticationService().signOut();
-                                  if (!ctx.mounted) return;
-                                  Navigator.pushNamedAndRemoveUntil(
-                                      ctx, '/auth', (r) => false);
-                                },
-                                child: const Text('Log out'),
-                              ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
+                // Reuse the AccountDashboardBody so users can edit profile
+                // directly from the cart page.
+                const Card(
+                  margin: EdgeInsets.symmetric(vertical: 8.0),
+                  child: Padding(
+                    padding: EdgeInsets.all(12.0),
+                    child: AccountDashboardBody(),
+                  ),
                 ),
                 const SizedBox(height: 8),
                 if (items.isEmpty)
