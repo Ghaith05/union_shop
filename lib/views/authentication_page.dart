@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:union_shop/widgets/navbar.dart';
 import 'package:union_shop/data/auth_service.dart';
 
@@ -83,9 +84,23 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                                 }
                                 Navigator.pushNamedAndRemoveUntil(
                                     context, '/account', (r) => false);
-                              } catch (_) {}
-                              if (mounted) {
-                                setState(() => _loading = false);
+                              } catch (e) {
+                                final msg = e.toString();
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content: Text('Sign-in failed: $msg')),
+                                  );
+                                }
+                                if (kDebugMode) {
+                                  // ignore: avoid_print
+                                  print(
+                                      'AuthenticationPage: Google sign-in error: $msg');
+                                }
+                              } finally {
+                                if (mounted) {
+                                  setState(() => _loading = false);
+                                }
                               }
                             },
                     ),
