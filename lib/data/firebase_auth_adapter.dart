@@ -78,18 +78,42 @@ class FirebaseAuthAdapter {
     // implement the native flow.
     if (kIsWeb) {
       final provider = fb.GoogleAuthProvider();
-      // Try to force an interactive re-consent/login so the user must choose
-      // or enter an account instead of silently using an existing Google
-      // session. `consent` forces the consent screen which typically prevents
-      // silent auto-signin; `select_account` shows the account chooser.
-      // Some browsers / SSO states may still auto-select an account. If that
-      // happens, the only reliable workaround is to sign the user out of their
-      // Google session or use a redirect flow.
-      provider.setCustomParameters({'prompt': 'consent'});
-      final userCred = await fb.FirebaseAuth.instance.signInWithPopup(provider);
-      final user = _fromFirebaseUser(userCred.user);
-      if (user == null) throw Exception('Failed to sign in with Google');
-      return user;
+      provider.setCustomParameters({'prompt': 'select_account'});
+      try {
+        final userCred =
+            await fb.FirebaseAuth.instance.signInWithPopup(provider);
+        final user = _fromFirebaseUser(userCred.user);
+        // ignore: avoid_print
+        print('FirebaseAuthAdapter.signInWithGoogle: signed in ${user?.email}');
+        if (user == null) throw Exception('Failed to sign in with Google');
+        return user;
+      } on fb.FirebaseAuthException catch (e) {
+        // Common web issues: configuration-not-found (provider not enabled)
+        // or popup-blocked. Try a redirect fallback which is more resilient
+        // in restricted browsers or when popups are blocked.
+        // ignore: avoid_print
+        print(
+            'FirebaseAuthAdapter.signInWithGoogle(): web popup error: ${e.code} ${e.message}');
+        if (e.code == 'configuration-not-found' ||
+            e.code == 'popup-blocked' ||
+            e.code == 'operation-not-allowed') {
+          // Start redirect flow. This call will navigate away from the app
+          // and return to the app when the provider finishes authentication.
+          try {
+            await fb.FirebaseAuth.instance.signInWithRedirect(provider);
+            // After redirect, the app will be reloaded and the caller should
+            // observe authStateChanges to detect the signed-in user. Throw a
+            // specific exception so the UI can decide how to proceed.
+            throw Exception('redirect_started');
+          } catch (redirErr) {
+            // ignore: avoid_print
+            print(
+                'FirebaseAuthAdapter.signInWithGoogle(): redirect start failed: $redirErr');
+            rethrow;
+          }
+        }
+        rethrow;
+      }
     }
     throw UnimplementedError(
         'Google sign-in for mobile not implemented; add google_sign_in and implement the flow');
