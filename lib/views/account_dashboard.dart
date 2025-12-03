@@ -61,11 +61,15 @@ class _AccountDashboardState extends State<AccountDashboard> {
                       const SizedBox(height: 12),
                       ElevatedButton(
                         onPressed: () async {
+                          // Capture navigator synchronously to avoid using
+                          // the BuildContext across the async gap.
+                          final navigator = Navigator.of(context);
                           await _auth.signOut();
-                          if (!mounted) return;
-                          // ignore: use_build_context_synchronously
-                          Navigator.pushNamedAndRemoveUntil(
-                              context, '/auth', (r) => false);
+                          if (!mounted) {
+                            return;
+                          }
+                          navigator.pushNamedAndRemoveUntil(
+                              '/auth', (r) => false);
                         },
                         child: const Text('Log out'),
                       ),

@@ -78,11 +78,15 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                               try {
                                 await AuthenticationService()
                                     .signInWithGoogle();
-                                if (!mounted) return;
+                                if (!mounted) {
+                                  return;
+                                }
                                 Navigator.pushNamedAndRemoveUntil(
                                     context, '/account', (r) => false);
                               } catch (_) {}
-                              if (mounted) setState(() => _loading = false);
+                              if (mounted) {
+                                setState(() => _loading = false);
+                              }
                             },
                     ),
                     const SizedBox(height: 12),
@@ -115,18 +119,23 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                                           .signInWithEmail(
                                               _emailController.text,
                                               _passwordController.text);
-                                      if (!mounted) return;
+                                      if (!mounted) {
+                                        return;
+                                      }
                                       Navigator.pushNamedAndRemoveUntil(
                                           context, '/account', (r) => false);
                                     } catch (e) {
-                                      if (!mounted) return;
+                                      if (!mounted) {
+                                        return;
+                                      }
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(SnackBar(
                                               content: Text(
                                                   'Sign in failed: ${e.toString()}')));
                                     } finally {
-                                      if (mounted)
+                                      if (mounted) {
                                         setState(() => _loading = false);
+                                      }
                                     }
                                   },
                             child: _loading
@@ -150,18 +159,23 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
                                           .signUpWithEmail(
                                               _emailController.text,
                                               _passwordController.text);
-                                      if (!mounted) return;
+                                      if (!mounted) {
+                                        return;
+                                      }
                                       Navigator.pushNamedAndRemoveUntil(
                                           context, '/account', (r) => false);
                                     } catch (e) {
-                                      if (!mounted) return;
+                                      if (!mounted) {
+                                        return;
+                                      }
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(SnackBar(
                                               content: Text(
                                                   'Sign up failed: ${e.toString()}')));
                                     } finally {
-                                      if (mounted)
+                                      if (mounted) {
                                         setState(() => _loading = false);
+                                      }
                                     }
                                   },
                             child: const Text('Sign up'),
