@@ -132,6 +132,13 @@ class AuthenticationService {
   /// the in-memory `currentUser`. Falls back to updating the in-memory
   /// model when no backend is available (useful for offline/dev).
   Future<void> updateProfile({String? name, String? email}) async {
+    // Enforce email policy: only allow Gmail addresses when updating email.
+    if (email != null && email.trim().isNotEmpty) {
+      final normalized = email.trim().toLowerCase();
+      if (!normalized.endsWith('@gmail.com')) {
+        throw Exception('Email must be a @gmail.com address');
+      }
+    }
     try {
       final fb.User? fu = fb.FirebaseAuth.instance.currentUser;
       if (fu != null) {
