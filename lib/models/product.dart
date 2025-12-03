@@ -7,7 +7,7 @@ class Product {
   final bool onSale;
   final List<String> images;
   final String collectionId;
-  final String? category; // NEWflut 
+  final String? category; // NEWflut
 
   Product({
     required this.id,
@@ -43,6 +43,39 @@ class Product {
       images: images ?? const [],
       collectionId: collectionId,
       category: category, // NEW
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'price': price,
+      'salePrice': salePrice,
+      'onSale': onSale,
+      'images': images,
+      'collectionId': collectionId,
+      'category': category,
+    };
+  }
+
+  factory Product.fromJson(Map<String, dynamic> json) {
+    return Product(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      description: json['description'] as String? ?? '',
+      price: (json['price'] as num).toDouble(),
+      salePrice: json['salePrice'] == null
+          ? null
+          : (json['salePrice'] as num).toDouble(),
+      onSale: json['onSale'] as bool? ?? false,
+      images: (json['images'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
+      collectionId: json['collectionId'] as String,
+      category: json['category'] as String?,
     );
   }
 }
