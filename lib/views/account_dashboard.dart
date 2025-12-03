@@ -33,15 +33,85 @@ class AccountDashboardBody extends StatelessWidget {
               const SizedBox(height: 6),
               Text('Email: ${user.email}'),
               const SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: () async {
-                  final navigator = Navigator.of(context);
-                  await auth.signOut();
-                  if (!navigator.mounted) return;
-                  navigator.pushNamedAndRemoveUntil('/auth', (r) => false);
-                },
-                child: const Text('Log out'),
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: () async {
+                      // open edit dialog
+                      final result = await showDialog<bool?>(
+                        context: context,
+                        builder: (ctx) {
+                          final nameCtl =
+                              TextEditingController(text: user.name ?? '');
+                          final emailCtl =
+                              TextEditingController(text: user.email);
+                          return AlertDialog(
+                            title: const Text('Edit profile'),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                TextField(
+                                  controller: nameCtl,
+                                  decoration:
+                                      const InputDecoration(labelText: 'Name'),
+                                ),
+                                const SizedBox(height: 8),
+                                TextField(
+                                  controller: emailCtl,
+                                  decoration:
+                                      const InputDecoration(labelText: 'Email'),
+                                  keyboardType: TextInputType.emailAddress,
+                                ),
+                              ],
+                            ),
+                            actions: [
+                              TextButton(
+                                  onPressed: () => Navigator.of(ctx).pop(false),
+                                  child: const Text('Cancel')),
+                              ElevatedButton(
+                                onPressed: () async {
+                                  try {
+                                    await AuthenticationService().updateProfile(
+                                        name: nameCtl.text.trim(),
+                                        email: emailCtl.text.trim());
+                                    if (ctx.mounted)
+                                      Navigator.of(ctx).pop(true);
+                                  } catch (e) {
+                                    if (ctx.mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                              content: Text(
+                                                  'Update failed: ${e.toString()}')));
+                                    }
+                                  }
+                                },
+                                child: const Text('Save'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                      if (result == true) {
+                        // ignore: use_build_context_synchronously
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Profile updated')));
+                      }
+                    },
+                    child: const Text('Edit profile'),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final navigator = Navigator.of(context);
+                      await auth.signOut();
+                      if (!navigator.mounted) return;
+                      navigator.pushNamedAndRemoveUntil('/auth', (r) => false);
+                    },
+                    child: const Text('Log out'),
+                  ),
+                ],
               ),
+              const SizedBox(height: 8),
             ],
           ],
         );
