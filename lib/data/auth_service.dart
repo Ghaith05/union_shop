@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:union_shop/data/user.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:union_shop/data/firebase_auth_adapter.dart';
+import 'package:union_shop/data/cart.dart';
 
 /// AuthenticationService: core API only.
 /// - Singleton
@@ -72,6 +73,7 @@ class AuthenticationService {
       final adapter = FirebaseAuthAdapter();
       final user = await adapter.signInWithEmail(email, password);
       currentUser.value = user;
+      await CartService().loadCart();
       return user;
     } catch (_) {
       // Fallback to local simulated sign-in (offline/dev)
@@ -79,6 +81,7 @@ class AuthenticationService {
       if (!_looksLikeEmail(email)) throw Exception('Invalid email');
       final user = User(id: email, email: email, name: _nameFromEmail(email));
       currentUser.value = user;
+      await CartService().loadCart();
       return user;
     }
   }
@@ -88,12 +91,24 @@ class AuthenticationService {
       final adapter = FirebaseAuthAdapter();
       final user = await adapter.signUpWithEmail(email, password);
       currentUser.value = user;
+      await CartService().loadCart();
+      final fb.User? fu = fb.FirebaseAuth.instance.currentUser;
+      if (fu != null) {
+        await CartService().loadFromServer(fu.uid);
+        await CartService().saveToServer(fu.uid);
+      }
       return user;
     } catch (_) {
       await Future.delayed(const Duration(milliseconds: 350));
       if (!_looksLikeEmail(email)) throw Exception('Invalid email');
       final user = User(id: email, email: email, name: _nameFromEmail(email));
       currentUser.value = user;
+      await CartService().loadCart();
+      final fb.User? fu = fb.FirebaseAuth.instance.currentUser;
+      if (fu != null) {
+        await CartService().loadFromServer(fu.uid);
+        await CartService().saveToServer(fu.uid);
+      }
       return user;
     }
   }
@@ -103,6 +118,12 @@ class AuthenticationService {
       final adapter = FirebaseAuthAdapter();
       final user = await adapter.signInWithGoogle();
       currentUser.value = user;
+      await CartService().loadCart();
+      final fb.User? fu = fb.FirebaseAuth.instance.currentUser;
+      if (fu != null) {
+        await CartService().loadFromServer(fu.uid);
+        await CartService().saveToServer(fu.uid);
+      }
       return user;
     } catch (e, st) {
       if (kDebugMode) {

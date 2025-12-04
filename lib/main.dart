@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:union_shop/data/auth_service.dart';
+import 'package:union_shop/data/cart.dart';
 import 'package:union_shop/firebase_options.dart';
 import 'package:union_shop/views/about_page.dart';
 import 'package:union_shop/views/print_shack_about.dart';
@@ -23,7 +24,8 @@ Future<void> main() async {
     // ignore: avoid_print
     print('Firebase.initializeApp() warning: $e');
   }
-  // Initialize authentication service and wire Firebase auth state.
+  // Load persisted cart, then initialize authentication service and wire Firebase auth state.
+  await CartService().loadFromPrefs();
   await AuthenticationService().init();
   runApp(const UnionShopApp());
 }
