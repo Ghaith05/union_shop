@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:union_shop/widgets/navbar.dart';
 import 'package:union_shop/services/search_service.dart';
+import 'package:union_shop/data/sample_data.dart';
 import 'package:union_shop/models/product.dart';
 import 'package:union_shop/views/product_page.dart';
 
@@ -29,7 +30,15 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
   }
 
   void _doSearch(String q) {
-    final res = _svc.search(q);
+    final qTrim = q.trim();
+    if (qTrim.isEmpty) {
+      // Helpful UX: show all products when query is empty so users see items
+      // immediately after opening the search page.
+      setState(() => _results = sampleProducts);
+      return;
+    }
+
+    final res = _svc.search(qTrim);
     setState(() => _results = res);
   }
 
