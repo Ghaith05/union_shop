@@ -36,6 +36,10 @@ class _ProductPageState extends State<ProductPage> {
   @override
   Widget build(BuildContext context) {
     final product = widget.product;
+    // For some simple items (Sticker Pack p3, A5 Notebook p4) we don't
+    // require size/color selections — they only need a quantity. Keep the
+    // logic explicit so it's easy to adjust for other products later.
+    final bool requiresVariants = !(product.id == 'p3' || product.id == 'p4');
     // Ensure we show at least 4 thumbnails by duplicating the first image when
     // the product has fewer than 4 images (matches requested UI).
     final images = <String>[];
@@ -161,37 +165,40 @@ class _ProductPageState extends State<ProductPage> {
               const SizedBox(height: 12),
               Text(product.description),
               const SizedBox(height: 16),
-              // Row with Size, Color, Quantity selectors
+              // Row with selectors. For simple items we only show Qty.
               Row(
                 children: [
-                  Expanded(
-                    child: DropdownButton<String>(
-                      isExpanded: true,
-                      value: _selectedSize,
-                      hint: const Text('Size'),
-                      items: const [
-                        DropdownMenuItem(value: 'S', child: Text('S')),
-                        DropdownMenuItem(value: 'M', child: Text('M')),
-                        DropdownMenuItem(value: 'L', child: Text('L')),
-                      ],
-                      onChanged: (v) => setState(() => _selectedSize = v),
+                  if (requiresVariants) ...[
+                    Expanded(
+                      child: DropdownButton<String>(
+                        isExpanded: true,
+                        value: _selectedSize,
+                        hint: const Text('Size'),
+                        items: const [
+                          DropdownMenuItem(value: 'S', child: Text('S')),
+                          DropdownMenuItem(value: 'M', child: Text('M')),
+                          DropdownMenuItem(value: 'L', child: Text('L')),
+                        ],
+                        onChanged: (v) => setState(() => _selectedSize = v),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: DropdownButton<String>(
-                      isExpanded: true,
-                      value: _selectedColor,
-                      hint: const Text('Color'),
-                      items: const [
-                        DropdownMenuItem(value: 'Red', child: Text('Red')),
-                        DropdownMenuItem(value: 'Blue', child: Text('Blue')),
-                        DropdownMenuItem(value: 'Black', child: Text('Black')),
-                      ],
-                      onChanged: (v) => setState(() => _selectedColor = v),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: DropdownButton<String>(
+                        isExpanded: true,
+                        value: _selectedColor,
+                        hint: const Text('Color'),
+                        items: const [
+                          DropdownMenuItem(value: 'Red', child: Text('Red')),
+                          DropdownMenuItem(value: 'Blue', child: Text('Blue')),
+                          DropdownMenuItem(
+                              value: 'Black', child: Text('Black')),
+                        ],
+                        onChanged: (v) => setState(() => _selectedColor = v),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
+                    const SizedBox(width: 8),
+                  ],
                   // Quantity selector (1..10)
                   Expanded(
                     child: DropdownButton<int>(
@@ -215,10 +222,11 @@ class _ProductPageState extends State<ProductPage> {
               SizedBox(
                 width: double.infinity,
                 child: Builder(builder: (ctx) {
-                  final canAdd = _selectedSize != null &&
-                      _selectedColor != null &&
-                      _selectedQty != null &&
-                      (_selectedQty ?? 0) > 0;
+                  final canAdd = (_selectedQty != null &&
+                          (_selectedQty ?? 0) > 0) &&
+                      (requiresVariants
+                          ? (_selectedSize != null && _selectedColor != null)
+                          : true);
                   return ElevatedButton(
                     onPressed: canAdd
                         ? () {
