@@ -35,6 +35,8 @@ class CartService {
   factory CartService() => _instance;
 
   static const _prefsKey = 'union_shop_cart_v1';
+  // Allow tests to disable server sync when running in unit tests.
+  static bool serverSyncEnabled = true;
 
   // Using ValueNotifier to avoid adding new dependencies — UI can use ValueListenableBuilder.
   final ValueNotifier<List<CartItem>> items = ValueNotifier<List<CartItem>>([]);
@@ -209,6 +211,7 @@ class CartService {
   }
 
   Future<void> _maybeSaveToServer() async {
+    if (!serverSyncEnabled) return;
     try {
       final fu = fb.FirebaseAuth.instance.currentUser;
       if (fu != null) {
