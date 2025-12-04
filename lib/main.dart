@@ -11,6 +11,7 @@ import 'package:union_shop/views/account_dashboard.dart';
 import 'package:union_shop/widgets/navbar.dart';
 import 'package:union_shop/views/cart_page.dart';
 import 'package:union_shop/views/print_shack.dart';
+import 'package:union_shop/views/pay_page.dart';
 import 'package:union_shop/views/search_results_page.dart';
 
 Future<void> main() async {
@@ -55,6 +56,7 @@ class UnionShopApp extends StatelessWidget {
         AccountDashboard.routeName: (context) => const AccountDashboard(),
         CollectionsPage.routeName: (context) => const CollectionsPage(),
         CartPage.routeName: (context) => const CartPage(),
+        PayPage.routeName: (context) => const PayPage(),
         SearchResultsPage.routeName: (context) => const SearchResultsPage(),
       },
     );
