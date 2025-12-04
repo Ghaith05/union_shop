@@ -1,34 +1,149 @@
 # Union Shop (Flutter)
 
-This is a small Flutter sample app used for coursework and demonstrations.
+Union Shop is an e-commerce Flutter application that demonstrates an online shop with collections, product pages, a shopping cart with persistence, and authentication.
 
-## LCOV Coverage workflow
+This README explains how to set up, run, and contribute to the project, and includes a short reference of the project's structure and key files.
 
-A GitHub Actions workflow at `.github/workflows/lcov-report.yml` runs tests and posts an HTML coverage report as a PR comment using `romeovs/lcov-reporter-action`.
+## Table of contents
+- [Features](#features)
+- [Installation & Setup](#installation--setup)
+- [Usage](#usage)
+- [Running Tests](#running-tests)
+- [Project Structure & Technologies](#project-structure--technologies)
+- [How the README Was Built (meta)](#how-the-readme-was-built-meta)
+- [Contact](#contact)
 
-How it works
+## Features
+- Static and dynamic pages: homepage, collections, collection detail, product pages
+- Product options: size, color, quantity (variants optional per product)
+- Shopping cart with add/remove/update and local persistence (SharedPreferences)
+- Optional Firestore sync for logged-in users (merge strategy)
+- Authentication UI and Firebase integration (email + Google sign-in)
+- Search system (local search over sample products)
+- Responsive UI with desktop and mobile layouts
 
-- The workflow runs on pushes to `main` and `CW`, and on pull requests.
-- It checks out the repository, sets up Flutter, runs `flutter pub get`, then runs `flutter test --coverage` to produce `coverage/lcov.info`.
-- The workflow uploads `coverage/lcov.info` as an artifact (optional) and then calls `romeovs/lcov-reporter-action` to post a coverage HTML comment to the pull request.
+## Installation & Setup
 
-Customizing the workflow
+Prerequisites
 
-- Change which branches trigger the workflow by editing `.github/workflows/lcov-report.yml`.
-- To only post coverage for PRs, remove or restrict the `push` event and keep `pull_request`.
-- To provide a different lcov file path, change the `lcov-file` input (defaults to `./coverage/lcov.info`).
-- If you run tests in a separate job, remove the test step from the reporter job and instead pass the `lcov.info` artifact to the reporter job. Use job-level `needs:` and `actions/upload-artifact` / `actions/download-artifact` to pass artifacts between jobs.
+- Flutter SDK (>= stable channel). Install from https://flutter.dev/docs/get-started/install
+- Git
+- For web testing: Chrome browser
+- (Optional) A Firebase project for auth and Firestore if you want server sync
 
-Secrets and tokens
+Clone the repository
 
-- The workflow uses the default `GITHUB_TOKEN` to post comments. If you want to use a personal access token with broader permissions, create a repository secret and set `GITHUB_TOKEN: ${{ secrets.YOUR_TOKEN_NAME }}` in the workflow step environment.
+```powershell
+git clone <your-repo-url>
+cd union_shop
+```
 
-Troubleshooting
+Install dependencies
 
-- If the reporter fails to find `coverage/lcov.info`, ensure your tests ran with coverage and that the file exists.
-- For Flutter web or platform tests, ensure `flutter test --coverage` is appropriate for your test targets.
-- If comments don't appear on PRs, verify the workflow ran on the PR and `GITHUB_TOKEN` has permissions (default token works for normal repo comments).
+```powershell
+flutter pub get
+```
 
-Example: minimal reporter-only job
+If you want Firebase features (auth / Firestore):
 
-If you already run tests elsewhere, you can replace the `Run tests with coverage` step with artifact download and then call the reporter only. See the workflow file for more details.
+1. Create a Firebase project at https://console.firebase.google.com
+2. Add a Web app and copy the config
+3. Run `flutterfire configure` or update `lib/firebase_options.dart` with your project's values
+
+Run the app
+
+```powershell
+flutter run -d chrome    # run in web (Chrome)
+flutter run              # run on a connected device or emulator
+```
+
+Notes
+
+- If you make changes to `pubspec.yaml` run `flutter pub get` again.
+- If you update platform code (android/ios) consider running a clean build: `flutter clean` then `flutter run`.
+
+## Usage
+
+Key user flows
+
+- Browse collections from the homepage or Shop navigation.
+- Open a product page to view images, select options (size/color) and quantity, then Add to cart.
+- View the Cart page to update quantities, remove items, or clear the cart.
+- Sign in via the Account icon to enable optional server-side cart sync (Firestore).
+- Use the Search icon (top-right) or Footer → Search to open the Search page and type queries (title, description, category). Visiting Search with an empty query shows all sample products.
+
+- Checkout / Pay page: Open the Cart and press the Pay button (or visit the `/pay` route) to open the Checkout flow. The Checkout page shows a contact input (key: `pay-contact`), an order summary with line items and the cart total, and a primary Pay button (key: `pay-button`). Pressing Pay triggers a simple demo flow that clears the cart, shows an "Order placed" snackbar, and returns the app to the home screen. There is a widget test for this flow at `test/pay_page_test.dart`.
+
+Configuration options
+
+- `lib/firebase_options.dart`: Firebase configuration (auto-generated by FlutterFire or editable manually).
+- `lib/data/sample_data.dart`: sample products and collections used by the app.
+
+Screenshots
+
+Include screenshots in `assets/screenshots/` and reference them here. Example:
+
+![Search page screenshot](assets/images/screenshots/search_example.png)
+
+## Running Tests
+
+Unit and widget tests are located under `test/`.
+
+Run all tests:
+
+```powershell
+flutter test
+```
+
+Run a single test file:
+
+```powershell
+flutter test test/search_service_test.dart
+```
+
+The repository includes a GitHub Actions workflow that can post LCOV coverage reports for PRs (`.github/workflows/lcov-report.yml`).
+
+## Project Structure & Technologies
+
+- `lib/` — app source code
+  - `main.dart` — application entry and routes
+  - `views/` — screens/pages (home, product, collections, cart, search, auth)
+  - `widgets/` — shared widgets (navbar, footer, etc.)
+  - `data/` — models, sample data, services (cart, auth)
+  - `services/` — small services such as `search_service.dart`
+  - `models/` — domain models (e.g., `product.dart`)
+- `test/` — unit and widget tests
+- `assets/` — images and static assets
+- `pubspec.yaml` — dependencies and assets
+
+Key packages used
+
+- flutter (SDK)
+- firebase_core, firebase_auth, cloud_firestore — optional Firebase features
+- shared_preferences — local persistence for the cart
+
+Development tools
+
+- Flutter SDK and the `flutter` CLI
+- Optional: `flutterfire` CLI for generating `firebase_options.dart`
+
+## How the README Was Built (meta)
+
+This README follows a recommended structure for project front pages:
+
+1. Project Title and Description — clear title and short explanation of purpose.
+2. Installation and Setup Instructions — prerequisites, clone, install, how to run.
+3. Usage Instructions — main user flows and configuration options.
+4. Project Structure and technologies used — quick developer reference.
+5. Contact Information — who to reach out to for questions.
+
+Keeping README up to date is important — update it each time you add or remove major features.
+
+## Contact
+
+Geeth
+
+- Email: ghaithahmadalsawair73@gmail.com
+- GitHub: https://github.com/Ghaith05
+
+
