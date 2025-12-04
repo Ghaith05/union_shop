@@ -5,6 +5,7 @@ import 'package:union_shop/views/collections_page.dart';
 import 'package:union_shop/ui/responsive.dart';
 import 'package:union_shop/data/sample_data.dart';
 import 'package:union_shop/widgets/footer.dart';
+import 'package:union_shop/views/search_results_page.dart';
 import 'package:union_shop/data/cart.dart';
 import 'package:union_shop/data/auth_service.dart';
 import 'package:union_shop/data/user.dart';
@@ -21,6 +22,13 @@ PreferredSizeWidget buildAppBar(BuildContext context, {Widget? titleWidget}) {
     title: titleWidget ?? const SizedBox.shrink(),
     // No leading menu here; we want the popup menu on the far right inside actions.
     actions: [
+      IconButton(
+        key: const ValueKey('nav-search'),
+        icon: const Icon(Icons.search, color: Colors.black),
+        tooltip: 'Search',
+        onPressed: () =>
+            Navigator.pushNamed(context, SearchResultsPage.routeName),
+      ),
       ValueListenableBuilder<User?>(
         valueListenable: AuthenticationService().currentUser,
         builder: (ctx, user, __) {
@@ -232,6 +240,13 @@ class HomeScreen extends StatelessWidget {
               }),
             ),
             // Account and cart icons
+            IconButton(
+              key: const ValueKey('nav-search'),
+              icon: const Icon(Icons.search, color: Colors.black),
+              tooltip: 'Search',
+              onPressed: () =>
+                  Navigator.pushNamed(context, SearchResultsPage.routeName),
+            ),
             ValueListenableBuilder<User?>(
               valueListenable: AuthenticationService().currentUser,
               builder: (ctx, user, __) {
@@ -289,6 +304,15 @@ class HomeScreen extends StatelessWidget {
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
+              ListTile(
+                key: const ValueKey('drawer-search'),
+                leading: const Icon(Icons.search),
+                title: const Text('Search'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, SearchResultsPage.routeName);
+                },
+              ),
               ListTile(
                 key: const ValueKey('drawer-home'),
                 title: const Text('Home'),
@@ -557,6 +581,8 @@ class HomeScreen extends StatelessWidget {
               onContact: () => ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                       content: Text('Contact page not implemented'))),
+              onSearch: () =>
+                  Navigator.pushNamed(context, SearchResultsPage.routeName),
             ),
             const SizedBox(height: 8),
             const Text('© University Union — All rights reserved',
