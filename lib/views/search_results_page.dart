@@ -39,4 +39,77 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
     super.dispose();
   }
 
-  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: buildAppBar(context, titleWidget: const Text('Search')),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    key: const ValueKey('search-input'),
+                    controller: _controller,
+                    textInputAction: TextInputAction.search,
+                    onSubmitted: (v) => _doSearch(v),
+                    decoration: const InputDecoration(
+                      hintText: 'Search products...',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  key: const ValueKey('search-button'),
+                  onPressed: () => _doSearch(_controller.text),
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+                    child: Icon(Icons.search),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Expanded(
+              child: _results.isEmpty
+                  ? const Center(child: Text('No results'))
+                  : ListView.separated(
+                      itemCount: _results.length,
+                      separatorBuilder: (_, __) => const Divider(),
+                      itemBuilder: (ctx, idx) {
+                        final p = _results[idx];
+                        return ListTile(
+                          key: ValueKey('search-result-${p.id}'),
+                          leading: p.images.isNotEmpty
+                              ? Image.asset(p.images.first,
+                                  width: 56,
+                                  height: 56,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => Container(
+                                      color: Colors.grey[300],
+                                      width: 56,
+                                      height: 56))
+                              : Container(
+                                  width: 56,
+                                  height: 56,
+                                  color: Colors.grey[300]),
+                          title: Text(p.title),
+                          subtitle: Text(p.description),
+                          trailing: Text(
+                              '£${(p.onSale && p.salePrice != null) ? p.salePrice!.toStringAsFixed(2) : p.price.toStringAsFixed(2)}'),
+                          onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (ctx) => ProductPage(product: p))),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
