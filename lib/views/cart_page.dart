@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:union_shop/widgets/navbar.dart';
 import 'package:union_shop/data/cart.dart';
 import 'package:union_shop/views/account_dashboard.dart';
+import 'package:union_shop/views/pay_page.dart';
 
 class CartPage extends StatelessWidget {
   static const routeName = '/cart';
@@ -44,7 +45,8 @@ class CartPage extends StatelessWidget {
                                     flex: 4,
                                     child: Text(
                                       'Product',
-                                      style: TextStyle(fontWeight: FontWeight.w600),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600),
                                     ),
                                   ),
                                   SizedBox(width: 24),
@@ -52,7 +54,8 @@ class CartPage extends StatelessWidget {
                                     width: 96,
                                     child: Text(
                                       'Price',
-                                      style: TextStyle(fontWeight: FontWeight.w600),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600),
                                     ),
                                   ),
                                   SizedBox(width: 24),
@@ -60,7 +63,8 @@ class CartPage extends StatelessWidget {
                                     width: 120,
                                     child: Text(
                                       'Quantity',
-                                      style: TextStyle(fontWeight: FontWeight.w600),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600),
                                     ),
                                   ),
                                   SizedBox(width: 24),
@@ -68,7 +72,8 @@ class CartPage extends StatelessWidget {
                                     width: 96,
                                     child: Text(
                                       'Total',
-                                      style: TextStyle(fontWeight: FontWeight.w600),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600),
                                     ),
                                   ),
                                 ],
@@ -81,42 +86,54 @@ class CartPage extends StatelessWidget {
                               separatorBuilder: (_, __) => const Divider(),
                               itemBuilder: (ctx2, i) {
                                 final ci = items[i];
-                                final qtyController = TextEditingController(text: ci.quantity.toString());
-                                Widget removeAction(BuildContext dctx) => GestureDetector(
-                                  key: ValueKey('cart-remove-text-${ci.product.id}'),
-                                  onTap: () async {
-                                    final confirmed = await showDialog<bool>(
-                                      context: ctx2,
-                                      builder: (dctx2) => AlertDialog(
-                                        title: const Text('Remove item'),
-                                        content: Text('Remove "${ci.product.title}" from your cart?'),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () => Navigator.of(dctx2).pop(false),
-                                            child: const Text('Cancel'),
+                                final qtyController = TextEditingController(
+                                    text: ci.quantity.toString());
+                                Widget removeAction(BuildContext dctx) =>
+                                    GestureDetector(
+                                      key: ValueKey(
+                                          'cart-remove-text-${ci.product.id}'),
+                                      onTap: () async {
+                                        final confirmed =
+                                            await showDialog<bool>(
+                                          context: ctx2,
+                                          builder: (dctx2) => AlertDialog(
+                                            title: const Text('Remove item'),
+                                            content: Text(
+                                                'Remove "${ci.product.title}" from your cart?'),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () =>
+                                                    Navigator.of(dctx2)
+                                                        .pop(false),
+                                                child: const Text('Cancel'),
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: () =>
+                                                    Navigator.of(dctx2)
+                                                        .pop(true),
+                                                child: const Text('Remove'),
+                                              ),
+                                            ],
                                           ),
-                                          ElevatedButton(
-                                            onPressed: () => Navigator.of(dctx2).pop(true),
-                                            child: const Text('Remove'),
-                                          ),
-                                        ],
+                                        );
+                                        if (confirmed == true)
+                                          cart.removeProduct(ci.product.id);
+                                      },
+                                      child: const Text(
+                                        'Remove',
+                                        style: TextStyle(
+                                          color: Color(0xFF4d2963),
+                                          decoration: TextDecoration.underline,
+                                        ),
                                       ),
                                     );
-                                    if (confirmed == true) cart.removeProduct(ci.product.id);
-                                  },
-                                  child: const Text(
-                                    'Remove',
-                                    style: TextStyle(
-                                      color: Color(0xFF4d2963),
-                                      decoration: TextDecoration.underline,
-                                    ),
-                                  ),
-                                );
                                 if (!isNarrow) {
                                   return Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 12),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12),
                                     child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
                                       children: [
                                         if (ci.product.images.isNotEmpty)
                                           SizedBox(
@@ -125,7 +142,9 @@ class CartPage extends StatelessWidget {
                                             child: Image.asset(
                                               ci.product.images.first,
                                               fit: BoxFit.cover,
-                                              errorBuilder: (_, __, ___) => Container(color: Colors.grey[200]),
+                                              errorBuilder: (_, __, ___) =>
+                                                  Container(
+                                                      color: Colors.grey[200]),
                                             ),
                                           )
                                         else
@@ -138,7 +157,8 @@ class CartPage extends StatelessWidget {
                                         Expanded(
                                           flex: 4,
                                           child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               Text(
                                                 ci.product.title,
@@ -147,13 +167,17 @@ class CartPage extends StatelessWidget {
                                                   fontWeight: FontWeight.w600,
                                                 ),
                                               ),
-                                              if (ci.product.description.isNotEmpty)
+                                              if (ci.product.description
+                                                  .isNotEmpty)
                                                 Padding(
-                                                  padding: const EdgeInsets.only(top: 6),
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 6),
                                                   child: Text(
                                                     ci.product.description,
                                                     style: const TextStyle(
-                                                      fontStyle: FontStyle.italic,
+                                                      fontStyle:
+                                                          FontStyle.italic,
                                                       color: Colors.black54,
                                                     ),
                                                   ),
@@ -166,7 +190,8 @@ class CartPage extends StatelessWidget {
                                         const SizedBox(width: 24),
                                         SizedBox(
                                           width: 96,
-                                          child: Text('£${ci.unitPrice.toStringAsFixed(2)}'),
+                                          child: Text(
+                                              '£${ci.unitPrice.toStringAsFixed(2)}'),
                                         ),
                                         const SizedBox(width: 24),
                                         SizedBox(
@@ -176,59 +201,101 @@ class CartPage extends StatelessWidget {
                                               width: 80,
                                               child: Container(
                                                 decoration: BoxDecoration(
-                                                  border: Border.all(color: Colors.black54),
-                                                  borderRadius: BorderRadius.circular(6),
+                                                  border: Border.all(
+                                                      color: Colors.black54),
+                                                  borderRadius:
+                                                      BorderRadius.circular(6),
                                                 ),
                                                 child: Row(
                                                   children: [
                                                     Expanded(
                                                       child: TextField(
-                                                        key: ValueKey('cart-qty-input-${ci.product.id}'),
-                                                        controller: qtyController,
-                                                        keyboardType: TextInputType.number,
-                                                        textAlign: TextAlign.center,
-                                                        decoration: const InputDecoration(
-                                                          border: InputBorder.none,
+                                                        key: ValueKey(
+                                                            'cart-qty-input-${ci.product.id}'),
+                                                        controller:
+                                                            qtyController,
+                                                        keyboardType:
+                                                            TextInputType
+                                                                .number,
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        decoration:
+                                                            const InputDecoration(
+                                                          border:
+                                                              InputBorder.none,
                                                           isDense: true,
-                                                          contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 6),
+                                                          contentPadding:
+                                                              EdgeInsets
+                                                                  .symmetric(
+                                                                      vertical:
+                                                                          8,
+                                                                      horizontal:
+                                                                          6),
                                                         ),
                                                         onSubmitted: (val) {
-                                                          final parsed = int.tryParse(val) ?? ci.quantity;
-                                                          cart.updateQuantity(ci.product.id, parsed);
+                                                          final parsed =
+                                                              int.tryParse(
+                                                                      val) ??
+                                                                  ci.quantity;
+                                                          cart.updateQuantity(
+                                                              ci.product.id,
+                                                              parsed);
                                                         },
                                                       ),
                                                     ),
                                                     Container(
                                                       width: 28,
-                                                      decoration: const BoxDecoration(
+                                                      decoration:
+                                                          const BoxDecoration(
                                                         border: Border(
-                                                          left: BorderSide(color: Colors.black12),
+                                                          left: BorderSide(
+                                                              color: Colors
+                                                                  .black12),
                                                         ),
                                                       ),
                                                       child: Column(
-                                                        mainAxisSize: MainAxisSize.min,
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
                                                         children: [
                                                           IconButton(
-                                                            key: ValueKey('cart-increase-btn-${ci.product.id}'),
-                                                            padding: EdgeInsets.zero,
-                                                            constraints: const BoxConstraints(
+                                                            key: ValueKey(
+                                                                'cart-increase-btn-${ci.product.id}'),
+                                                            padding:
+                                                                EdgeInsets.zero,
+                                                            constraints:
+                                                                const BoxConstraints(
                                                               maxHeight: 22,
                                                               maxWidth: 22,
                                                             ),
                                                             iconSize: 18,
-                                                            icon: const Icon(Icons.keyboard_arrow_up),
-                                                            onPressed: () => cart.updateQuantity(ci.product.id, ci.quantity + 1),
+                                                            icon: const Icon(Icons
+                                                                .keyboard_arrow_up),
+                                                            onPressed: () => cart
+                                                                .updateQuantity(
+                                                                    ci.product
+                                                                        .id,
+                                                                    ci.quantity +
+                                                                        1),
                                                           ),
                                                           IconButton(
-                                                            key: ValueKey('cart-decrease-btn-${ci.product.id}'),
-                                                            padding: EdgeInsets.zero,
-                                                            constraints: const BoxConstraints(
+                                                            key: ValueKey(
+                                                                'cart-decrease-btn-${ci.product.id}'),
+                                                            padding:
+                                                                EdgeInsets.zero,
+                                                            constraints:
+                                                                const BoxConstraints(
                                                               maxHeight: 22,
                                                               maxWidth: 22,
                                                             ),
                                                             iconSize: 18,
-                                                            icon: const Icon(Icons.keyboard_arrow_down),
-                                                            onPressed: () => cart.updateQuantity(ci.product.id, ci.quantity - 1),
+                                                            icon: const Icon(Icons
+                                                                .keyboard_arrow_down),
+                                                            onPressed: () => cart
+                                                                .updateQuantity(
+                                                                    ci.product
+                                                                        .id,
+                                                                    ci.quantity -
+                                                                        1),
                                                           ),
                                                         ],
                                                       ),
@@ -242,7 +309,8 @@ class CartPage extends StatelessWidget {
                                         const SizedBox(width: 24),
                                         SizedBox(
                                           width: 96,
-                                          child: Text('£${ci.totalPrice.toStringAsFixed(2)}'),
+                                          child: Text(
+                                              '£${ci.totalPrice.toStringAsFixed(2)}'),
                                         ),
                                       ],
                                     ),
@@ -250,12 +318,15 @@ class CartPage extends StatelessWidget {
                                 }
                                 // Narrow layout
                                 return Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 12),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           if (ci.product.images.isNotEmpty)
                                             SizedBox(
@@ -264,7 +335,10 @@ class CartPage extends StatelessWidget {
                                               child: Image.asset(
                                                 ci.product.images.first,
                                                 fit: BoxFit.cover,
-                                                errorBuilder: (_, __, ___) => Container(color: Colors.grey[200]),
+                                                errorBuilder: (_, __, ___) =>
+                                                    Container(
+                                                        color:
+                                                            Colors.grey[200]),
                                               ),
                                             )
                                           else
@@ -276,7 +350,8 @@ class CartPage extends StatelessWidget {
                                           const SizedBox(width: 12),
                                           Expanded(
                                             child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Text(
                                                   ci.product.title,
@@ -294,11 +369,13 @@ class CartPage extends StatelessWidget {
                                       ),
                                       const SizedBox(height: 8),
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
                                             '£${ci.unitPrice.toStringAsFixed(2)}',
-                                            style: const TextStyle(fontWeight: FontWeight.w600),
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.w600),
                                           ),
                                           SizedBox(
                                             width: 140,
@@ -307,59 +384,108 @@ class CartPage extends StatelessWidget {
                                                 Expanded(
                                                   child: Container(
                                                     decoration: BoxDecoration(
-                                                      border: Border.all(color: Colors.black54),
-                                                      borderRadius: BorderRadius.circular(6),
+                                                      border: Border.all(
+                                                          color:
+                                                              Colors.black54),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              6),
                                                     ),
                                                     child: Row(
                                                       children: [
                                                         Expanded(
                                                           child: TextField(
-                                                            key: ValueKey('cart-qty-input-${ci.product.id}'),
-                                                            controller: qtyController,
-                                                            keyboardType: TextInputType.number,
-                                                            textAlign: TextAlign.center,
-                                                            decoration: const InputDecoration(
-                                                              border: InputBorder.none,
+                                                            key: ValueKey(
+                                                                'cart-qty-input-${ci.product.id}'),
+                                                            controller:
+                                                                qtyController,
+                                                            keyboardType:
+                                                                TextInputType
+                                                                    .number,
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                            decoration:
+                                                                const InputDecoration(
+                                                              border:
+                                                                  InputBorder
+                                                                      .none,
                                                               isDense: true,
-                                                              contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 6),
+                                                              contentPadding:
+                                                                  EdgeInsets.symmetric(
+                                                                      vertical:
+                                                                          8,
+                                                                      horizontal:
+                                                                          6),
                                                             ),
                                                             onSubmitted: (val) {
-                                                              final parsed = int.tryParse(val) ?? ci.quantity;
-                                                              cart.updateQuantity(ci.product.id, parsed);
+                                                              final parsed = int
+                                                                      .tryParse(
+                                                                          val) ??
+                                                                  ci.quantity;
+                                                              cart.updateQuantity(
+                                                                  ci.product.id,
+                                                                  parsed);
                                                             },
                                                           ),
                                                         ),
                                                         Container(
                                                           width: 28,
-                                                          decoration: const BoxDecoration(
+                                                          decoration:
+                                                              const BoxDecoration(
                                                             border: Border(
-                                                              left: BorderSide(color: Colors.black12),
+                                                              left: BorderSide(
+                                                                  color: Colors
+                                                                      .black12),
                                                             ),
                                                           ),
                                                           child: Column(
-                                                            mainAxisSize: MainAxisSize.min,
+                                                            mainAxisSize:
+                                                                MainAxisSize
+                                                                    .min,
                                                             children: [
                                                               IconButton(
-                                                                key: ValueKey('cart-increase-btn-${ci.product.id}'),
-                                                                padding: EdgeInsets.zero,
-                                                                constraints: const BoxConstraints(
+                                                                key: ValueKey(
+                                                                    'cart-increase-btn-${ci.product.id}'),
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .zero,
+                                                                constraints:
+                                                                    const BoxConstraints(
                                                                   maxHeight: 22,
                                                                   maxWidth: 22,
                                                                 ),
                                                                 iconSize: 18,
-                                                                icon: const Icon(Icons.keyboard_arrow_up),
-                                                                onPressed: () => cart.updateQuantity(ci.product.id, ci.quantity + 1),
+                                                                icon: const Icon(
+                                                                    Icons
+                                                                        .keyboard_arrow_up),
+                                                                onPressed: () =>
+                                                                    cart.updateQuantity(
+                                                                        ci.product
+                                                                            .id,
+                                                                        ci.quantity +
+                                                                            1),
                                                               ),
                                                               IconButton(
-                                                                key: ValueKey('cart-decrease-btn-${ci.product.id}'),
-                                                                padding: EdgeInsets.zero,
-                                                                constraints: const BoxConstraints(
+                                                                key: ValueKey(
+                                                                    'cart-decrease-btn-${ci.product.id}'),
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .zero,
+                                                                constraints:
+                                                                    const BoxConstraints(
                                                                   maxHeight: 22,
                                                                   maxWidth: 22,
                                                                 ),
                                                                 iconSize: 18,
-                                                                icon: const Icon(Icons.keyboard_arrow_down),
-                                                                onPressed: () => cart.updateQuantity(ci.product.id, ci.quantity - 1),
+                                                                icon: const Icon(
+                                                                    Icons
+                                                                        .keyboard_arrow_down),
+                                                                onPressed: () =>
+                                                                    cart.updateQuantity(
+                                                                        ci.product
+                                                                            .id,
+                                                                        ci.quantity -
+                                                                            1),
                                                               ),
                                                             ],
                                                           ),
@@ -373,7 +499,8 @@ class CartPage extends StatelessWidget {
                                           ),
                                           Text(
                                             '£${ci.totalPrice.toStringAsFixed(2)}',
-                                            style: const TextStyle(fontWeight: FontWeight.w600),
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.w600),
                                           ),
                                         ],
                                       ),
@@ -396,13 +523,12 @@ class CartPage extends StatelessWidget {
                               ),
                               ElevatedButton(
                                 onPressed: () {
-                                  cart.clear();
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Order placed — thank you!')),
-                                  );
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (ctx) => const PayPage()));
                                 },
                                 child: const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 12),
                                   child: Text('Checkout'),
                                 ),
                               ),
