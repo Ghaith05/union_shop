@@ -214,21 +214,30 @@ class _ProductPageState extends State<ProductPage> {
               // Full-width Add to cart button (UI only)
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    final qty = _selectedQty ?? 1;
-                    CartService().add(product, quantity: qty);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content:
-                              Text('Added ${product.title} x$qty to cart')),
-                    );
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Text('Add to cart', style: TextStyle(fontSize: 16)),
-                  ),
-                ),
+                child: Builder(builder: (ctx) {
+                  final canAdd = _selectedSize != null &&
+                      _selectedColor != null &&
+                      _selectedQty != null &&
+                      (_selectedQty ?? 0) > 0;
+                  return ElevatedButton(
+                    onPressed: canAdd
+                        ? () {
+                            final qty = _selectedQty ?? 1;
+                            CartService().add(product, quantity: qty);
+                            ScaffoldMessenger.of(ctx).showSnackBar(
+                              SnackBar(
+                                  content: Text(
+                                      'Added ${product.title} x$qty to cart')),
+                            );
+                          }
+                        : null,
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child:
+                          Text('Add to cart', style: TextStyle(fontSize: 16)),
+                    ),
+                  );
+                }),
               ),
               const SizedBox(height: 8),
               SizedBox(
