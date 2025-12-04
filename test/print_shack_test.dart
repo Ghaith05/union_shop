@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:union_shop/views/print_shack.dart';
 import 'package:union_shop/data/cart.dart';
 
+
 void main() {
   setUp(() {
     CartService().clear();
@@ -11,6 +12,11 @@ void main() {
   testWidgets('Per Line dropdown shows second field and updates price',
       (tester) async {
     await tester.pumpWidget(const MaterialApp(home: PrintShackPage()));
+
+    // Ensure the dropdown is visible before tapping (prevents hit-test misses
+    // in the test environment)
+    await tester.ensureVisible(find.byKey(const ValueKey('print-lines')));
+    await tester.pumpAndSettle();
 
     // Initially one line selected and price should be £3.00
     expect(find.text('£3.00'), findsOneWidget);
@@ -37,6 +43,9 @@ void main() {
     await tester.enterText(find.byKey(const ValueKey('print-line1')), 'HELLO');
 
     // Select Two Lines and enter second line
+    // Make sure the dropdown is visible before interacting with it
+    await tester.ensureVisible(find.byKey(const ValueKey('print-lines')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('print-lines')));
     await tester.pumpAndSettle();
     expect(find.text('Two Lines of Text'), findsOneWidget);

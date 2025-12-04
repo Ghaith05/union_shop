@@ -1,8 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:union_shop/data/auth_service.dart';
 import 'package:union_shop/data/user.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 void main() {
+  setUpAll(() async {
+    try {
+      await Firebase.initializeApp();
+    } catch (_) {}
+  });
+
   group('AuthenticationService.updateProfile', () {
     final auth = AuthenticationService();
 

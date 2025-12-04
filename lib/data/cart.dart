@@ -36,7 +36,8 @@ class CartService {
 
   static const _prefsKey = 'union_shop_cart_v1';
   // Allow tests to disable server sync when running in unit tests.
-  static bool serverSyncEnabled = true;
+  // Default to false to avoid trying to call Firebase from unit tests.
+  static bool serverSyncEnabled = false;
 
   // Using ValueNotifier to avoid adding new dependencies — UI can use ValueListenableBuilder.
   final ValueNotifier<List<CartItem>> items = ValueNotifier<List<CartItem>>([]);

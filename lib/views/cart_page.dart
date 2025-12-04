@@ -116,8 +116,9 @@ class CartPage extends StatelessWidget {
                                             ],
                                           ),
                                         );
-                                        if (confirmed == true)
+                                        if (confirmed == true) {
                                           cart.removeProduct(ci.product.id);
+                                        }
                                       },
                                       child: const Text(
                                         'Remove',

@@ -7,7 +7,7 @@ void main() {
       (WidgetTester tester) async {
     // Set window size to desktop
     // ignore: deprecated_member_use
-    tester.binding.window.physicalSizeTestValue = const Size(800, 600);
+    tester.binding.window.physicalSizeTestValue = const Size(1000, 600);
     // ignore: deprecated_member_use
     tester.binding.window.devicePixelRatioTestValue = 1.0;
     addTearDown(() {

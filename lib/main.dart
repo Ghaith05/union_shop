@@ -20,6 +20,8 @@ Future<void> main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+    // Enable syncing to server now that Firebase has been initialized.
+    CartService.serverSyncEnabled = true;
   } catch (e) {
     // initialization may already have been done or failed; log for debugging
     // but continue so the app can still run in offline/dev fallback mode.

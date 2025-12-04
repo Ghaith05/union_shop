@@ -86,8 +86,9 @@ class _PayPageState extends State<PayPage> {
                   ValueListenableBuilder<List<CartItem>>(
                     valueListenable: cart.items,
                     builder: (context, items, _) {
-                      if (items.isEmpty)
+                      if (items.isEmpty) {
                         return const Text('Your cart is empty');
+                      }
                       return Column(
                         children: items
                             .map((ci) => Padding(

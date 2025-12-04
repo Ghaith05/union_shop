@@ -25,8 +25,8 @@ void main() {
     expect(find.widgetWithText(ElevatedButton, 'Add to cart'), findsOneWidget);
     expect(find.widgetWithText(OutlinedButton, 'Share'), findsOneWidget);
   });
-  
-    testWidgets('ProductPage dropdowns and qty selector work; actions disabled',
+
+  testWidgets('ProductPage dropdowns and qty selector work; actions disabled',
       (WidgetTester tester) async {
     final prod = sampleProducts.first;
 
@@ -59,14 +59,18 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('3'), findsWidgets);
 
-    // Buttons should be present but disabled (onPressed == null)
-    final ElevatedButton addBtn = tester.widget(find.widgetWithText(ElevatedButton, 'Add to cart'));
-    expect(addBtn.onPressed, isNull);
+    // Buttons should be present. After selecting size/color/qty the Add button
+    // must be enabled and Buy should also be enabled. Share remains disabled.
+    final ElevatedButton addBtn =
+        tester.widget(find.widgetWithText(ElevatedButton, 'Add to cart'));
+    expect(addBtn.onPressed, isNotNull);
 
-    final ElevatedButton buyBtn = tester.widget(find.widgetWithText(ElevatedButton, 'Buy with shop'));
-    expect(buyBtn.onPressed, isNull);
+    final ElevatedButton buyBtn =
+        tester.widget(find.widgetWithText(ElevatedButton, 'Buy with shop'));
+    expect(buyBtn.onPressed, isNotNull);
 
-    final OutlinedButton shareBtn = tester.widget(find.widgetWithText(OutlinedButton, 'Share'));
+    final OutlinedButton shareBtn =
+        tester.widget(find.widgetWithText(OutlinedButton, 'Share'));
     expect(shareBtn.onPressed, isNull);
   });
 }
