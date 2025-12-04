@@ -3,6 +3,7 @@ import 'package:union_shop/models/product.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb;
 
 class CartItem {
   final Product product;
@@ -48,6 +49,8 @@ class CartService {
     }
     items.value = list;
     _save();
+    // Try to push change to server in background if user is signed in.
+    Future.microtask(() => _maybeSaveToServer());
   }
 
   void removeProduct(String productId) {
@@ -55,6 +58,7 @@ class CartService {
       ..removeWhere((c) => c.product.id == productId);
     items.value = list;
     _save();
+    Future.microtask(() => _maybeSaveToServer());
   }
 
   void updateQuantity(String productId, int quantity) {
@@ -68,12 +72,14 @@ class CartService {
       }
       items.value = list;
       _save();
+      Future.microtask(() => _maybeSaveToServer());
     }
   }
 
   void clear() {
     items.value = [];
     _save();
+    Future.microtask(() => _maybeSaveToServer());
   }
 
   double get total =>
@@ -116,11 +122,24 @@ class CartService {
   /// functionality still works when Firestore is unavailable.
   Future<void> saveToServer(String uid) async {
     try {
-      final doc = FirebaseFirestore.instance.doc('users/$uid/cart');
+      if (kDebugMode) {
+        // ignore: avoid_print
+        print('CartService.saveToServer: called with uid="$uid"');
+      }
+      // Save items as a field on the user document: /users/{uid} -> { items: [...] }
+      final docRef = FirebaseFirestore.instance.collection('users').doc(uid);
       final encoded = items.value.map((c) => c.toJson()).toList();
-      await doc.set({'items': encoded});
-    } catch (_) {
-      // ignore server save failures
+      await docRef.set({'items': encoded});
+      if (kDebugMode) {
+        // ignore: avoid_print
+        print(
+            'CartService.saveToServer: saved ${encoded.length} items for uid=$uid');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        // ignore: avoid_print
+        print('CartService.saveToServer: error saving to Firestore: $e');
+      }
     }
   }
 
@@ -128,8 +147,20 @@ class CartService {
   /// summed quantities for identical product IDs (local + remote).
   Future<void> loadFromServer(String uid) async {
     try {
-      final doc = await FirebaseFirestore.instance.doc('users/$uid/cart').get();
-      if (!doc.exists) return;
+      if (kDebugMode) {
+        // ignore: avoid_print
+        print('CartService.loadFromServer: called with uid="$uid"');
+      }
+      final docRef = FirebaseFirestore.instance.collection('users').doc(uid);
+      final doc = await docRef.get();
+      if (!doc.exists) {
+        if (kDebugMode) {
+          // ignore: avoid_print
+          print(
+              'CartService.loadFromServer: user document does not exist for uid=$uid');
+        }
+        return;
+      }
       final data = doc.data();
       if (data == null) return;
       final remoteRaw = (data['items'] as List<dynamic>?) ?? [];
@@ -164,8 +195,30 @@ class CartService {
       items.value = merged;
       // Persist merged result locally
       await _save();
-    } catch (_) {
-      // ignore load errors — fall back to local state
+      if (kDebugMode) {
+        // ignore: avoid_print
+        print(
+            'CartService.loadFromServer: merged ${merged.length} items for uid=$uid');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        // ignore: avoid_print
+        print('CartService.loadFromServer: error loading from Firestore: $e');
+      }
+    }
+  }
+
+  Future<void> _maybeSaveToServer() async {
+    try {
+      final fu = fb.FirebaseAuth.instance.currentUser;
+      if (fu != null) {
+        await saveToServer(fu.uid);
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        // ignore: avoid_print
+        print('CartService._maybeSaveToServer: $e');
+      }
     }
   }
 }
