@@ -81,9 +81,30 @@ Configuration options
 
 Screenshots
 
-Include screenshots in `assets/screenshots/` and reference them here. Example:
+The repository includes a few UI screenshots you can use in the README. Add or replace files under `assets/images/screenshots/` and they will be referenced here. Current screenshots included in the repo:
 
-![Search page screenshot](assets/images/screenshots/search_example.png)
+- `assets/images/screenshots/home_screen.png` — Home (desktop) with featured product
+- `assets/images/screenshots/collections_page.png` — Collections / Shop overview
+- `assets/images/screenshots/collection_page.png` — Collection detail
+- `assets/images/screenshots/product_page.png` — Product page (desktop)
+- `assets/images/screenshots/product_page_mobile_view.png` — Product page (mobile)
+- `assets/images/screenshots/add_to_cart_confirmation.png` — Add to cart confirmation / snackbar
+- `assets/images/screenshots/cart_page.png` — Cart page (items, qty, checkout)
+- `assets/images/screenshots/pay_page.png` — Checkout / Pay page (contact input & order summary)
+- `assets/images/screenshots/authentication_page.png` — Authentication / Account
+
+You can include these images inline in the README. Example usage (already wired to the repo paths):
+
+![Home screen](assets/images/screenshots/home_screen.png)
+
+If you prefer a compact gallery, add the other images similarly:
+
+![Product page (desktop)](assets/images/screenshots/product_page.png)
+![Product page (mobile)](assets/images/screenshots/product_page_mobile_view.png)
+![Cart page](assets/images/screenshots/cart_page.png)
+![Checkout / Pay page](assets/images/screenshots/pay_page.png)
+
+Tip: Use the `product_page_mobile_view.png` and `product_page.png` pair to demonstrate responsiveness.
 
 ## Running Tests
 
