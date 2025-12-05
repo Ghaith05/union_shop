@@ -231,7 +231,14 @@ class _ProductPageState extends State<ProductPage> {
                     onPressed: canAdd
                         ? () {
                             final qty = _selectedQty ?? 1;
-                            CartService().add(product, quantity: qty);
+                            final options = requiresVariants
+                                ? {
+                                    'Size': _selectedSize!,
+                                    'Color': _selectedColor!,
+                                  }
+                                : null;
+                            CartService()
+                                .add(product, quantity: qty, options: options);
                             ScaffoldMessenger.of(ctx).showSnackBar(
                               SnackBar(
                                   content: Text(
