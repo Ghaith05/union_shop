@@ -8,8 +8,9 @@ import 'package:firebase_auth/firebase_auth.dart' as fb;
 class CartItem {
   final Product product;
   int quantity;
+  final Map<String, String>? options;
 
-  CartItem({required this.product, this.quantity = 1});
+  CartItem({required this.product, this.quantity = 1, this.options});
 
   double get unitPrice => (product.onSale && product.salePrice != null)
       ? product.salePrice!
@@ -20,12 +21,16 @@ class CartItem {
   Map<String, dynamic> toJson() => {
         'product': product.toJson(),
         'quantity': quantity,
+        'options': options,
       };
 
   factory CartItem.fromJson(Map<String, dynamic> json) => CartItem(
         product:
             Product.fromJson(Map<String, dynamic>.from(json['product'] as Map)),
         quantity: (json['quantity'] as num).toInt(),
+        options: json['options'] == null
+            ? null
+            : Map<String, String>.from(json['options'] as Map),
       );
 }
 
@@ -42,13 +47,24 @@ class CartService {
   // Using ValueNotifier to avoid adding new dependencies — UI can use ValueListenableBuilder.
   final ValueNotifier<List<CartItem>> items = ValueNotifier<List<CartItem>>([]);
 
-  void add(Product product, {int quantity = 1}) {
+  static String _optionsKey(Map<String, String>? options) {
+    if (options == null || options.isEmpty) return '';
+    final entries = options.entries.toList()
+      ..sort((a, b) => a.key.compareTo(b.key));
+    return entries.map((e) => '${e.key}=${e.value}').join(',');
+  }
+
+  void add(Product product, {int quantity = 1, Map<String, String>? options}) {
+    final normOptions = options ?? <String, String>{};
     final list = List<CartItem>.from(items.value);
-    final idx = list.indexWhere((c) => c.product.id == product.id);
+    final idx = list.indexWhere((c) =>
+        c.product.id == product.id &&
+        mapEquals(c.options ?? <String, String>{}, normOptions));
     if (idx >= 0) {
       list[idx].quantity += quantity;
     } else {
-      list.add(CartItem(product: product, quantity: quantity));
+      list.add(
+          CartItem(product: product, quantity: quantity, options: options));
     }
     items.value = list;
     _save();
@@ -56,17 +72,24 @@ class CartService {
     Future.microtask(() => _maybeSaveToServer());
   }
 
-  void removeProduct(String productId) {
+  void removeProduct(String productId, {Map<String, String>? options}) {
+    final normOptions = options ?? <String, String>{};
     final list = List<CartItem>.from(items.value)
-      ..removeWhere((c) => c.product.id == productId);
+      ..removeWhere((c) =>
+          c.product.id == productId &&
+          mapEquals(c.options ?? <String, String>{}, normOptions));
     items.value = list;
     _save();
     Future.microtask(() => _maybeSaveToServer());
   }
 
-  void updateQuantity(String productId, int quantity) {
+  void updateQuantity(String productId, int quantity,
+      {Map<String, String>? options}) {
+    final normOptions = options ?? <String, String>{};
     final list = List<CartItem>.from(items.value);
-    final idx = list.indexWhere((c) => c.product.id == productId);
+    final idx = list.indexWhere((c) =>
+        c.product.id == productId &&
+        mapEquals(c.options ?? <String, String>{}, normOptions));
     if (idx >= 0) {
       if (quantity <= 0) {
         list.removeAt(idx);
@@ -171,27 +194,38 @@ class CartService {
           .map((e) => CartItem.fromJson(Map<String, dynamic>.from(e as Map)))
           .toList();
 
-      // Build maps by productId
+      // Build maps by productId|optionsKey so items with different
+      // options (size/color combos) are treated as distinct entries.
       final Map<String, int> remoteMap = {
-        for (var r in remoteItems) r.product.id: r.quantity
+        for (var r in remoteItems)
+          '${r.product.id}|${_optionsKey(r.options)}': r.quantity
       };
       final Map<String, int> localMap = {
-        for (var l in items.value) l.product.id: l.quantity
+        for (var l in items.value)
+          '${l.product.id}|${_optionsKey(l.options)}': l.quantity
       };
 
-      // Merge: sum quantities
-      final Set<String> allIds = {...remoteMap.keys, ...localMap.keys};
+      // Merge: sum quantities by key
+      final Set<String> allKeys = {...remoteMap.keys, ...localMap.keys};
       final List<CartItem> merged = [];
-      for (final id in allIds) {
-        final remoteQty = remoteMap[id] ?? 0;
-        final localQty = localMap[id] ?? 0;
+      for (final key in allKeys) {
+        final remoteQty = remoteMap[key] ?? 0;
+        final localQty = localMap[key] ?? 0;
         final totalQty = remoteQty + localQty;
-        // Prefer richer product info from local if available, otherwise remote
-        final existingLocal = items.value.firstWhere((e) => e.product.id == id,
-            orElse: () => remoteItems.firstWhere((r) => r.product.id == id));
+        // Find an existing item locally (prefer local product metadata)
+        CartItem existingLocal;
+        try {
+          existingLocal = items.value.firstWhere(
+              (e) => '${e.product.id}|${_optionsKey(e.options)}' == key);
+        } catch (_) {
+          existingLocal = remoteItems.firstWhere(
+              (r) => '${r.product.id}|${_optionsKey(r.options)}' == key);
+        }
         if (totalQty > 0) {
-          merged.add(
-              CartItem(product: existingLocal.product, quantity: totalQty));
+          merged.add(CartItem(
+              product: existingLocal.product,
+              quantity: totalQty,
+              options: existingLocal.options));
         }
       }
 
